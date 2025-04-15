@@ -1,0 +1,123 @@
+body {
+	padding: 0;
+	margin: 0;
+
+	font-family: "Montserrat", sans-serif;
+	
+	display: flex;
+	justify-content: center;
+
+	height: 100vh;
+	width: 100vw;
+}
+
+nav {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	position: sticky;
+
+	width: 100vw;
+	height: 10vh;
+
+	margin: 0;
+}
+
+.text-field {
+	box-sizing: border-box;
+
+	height: 5vh;
+	width: 65vw;
+
+	border: none;
+	border-radius: 10px;
+	font-size: 14px;
+	padding: 1em;
+	padding-left: 3em;
+
+	background-color: rgba(229, 229, 229, 0.7);
+	background-repeat: no-repeat;
+	background-position: 1em 53%;
+	background-size: 1.6em;
+	fill: rgb(0, 31, 84);
+}
+
+.text-field[type="search"] {
+	border-bottom: 1px solid rgba(0,0,0,0.2);
+	background-image: url("./source/icons/search.svg");
+}
+
+.text-field[type="search"]:focus {
+	border-bottom: 1.5px solid rgba(0,0,0,0.4);
+}
+
+.text-field:focus {
+	outline: none;
+	border:none;
+}
+
+.text-field .icon { 
+	z-index: 0;
+
+	width: 50%;
+	height: 50%;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	display: inline-block;
+
+	position: absolute;
+	left: 0;
+
+	aspect-ratio: 1/1;
+
+}
+
+.text-field::placeholder {
+	font-weight: 400;
+	color: rgba(10, 17, 40, 0.65);
+}
+
+#ride-card {
+	position: absolute;
+	bottom: 0;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+
+	height: 25vh;
+	width: 100vw;
+
+
+	border-top-right-radius: 20px;
+	border-top-left-radius: 20px;
+
+	border:none;
+	border-top: 1px solid rgba(0,0,0,0.3);
+}
+
+#destination {
+	background-image: url("./source/icons/pin.svg");
+}
+
+button {
+	box-sizing: border-box;
+
+	font-size: 25px;
+
+	border: none;
+	border-radius: 12px;
+	background-color: #034078;
+
+	height: 8vh;
+	width: 75vw;
+
+	color: white;
+	font-weight: 700;
+
+	margin-top:3%;
+
+}
