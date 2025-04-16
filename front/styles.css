@@ -1,11 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
 body {
+	box-sizing: border-box;
 	padding: 0;
 	margin: 0;
 
 	font-family: "Montserrat", sans-serif;
 
 	height: 100vh;
-	width: 100vw;
+
+	padding-top: 10vh;
+
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;width: 100vw;
+
+	overflow: auto;
 }
 
 nav {
@@ -13,7 +22,9 @@ nav {
 	justify-content: center;
 	align-items: center;
 
-	position: sticky;
+	position: fixed;
+	top: 0;
+	z-index: 1000;
 
 	width: 100vw;
 	height: 10vh;
@@ -52,17 +63,17 @@ nav {
 	background-position: 1em 53%;
 	background-size: 1.6em;
 	fill: rgb(0, 31, 84);
-	opacity: 0.95;
+	opacity: 0.8;
 }
 
 .text-field[type="search"] {
 	border-bottom: 1px solid rgba(0,0,0,0.2);
 	background-image: url("./source/icons/search.svg");
-	box-shadow: 0 3px 16px rgba(0,0,0,0.21);
+	box-shadow: 0 3px 16px rgba(0,0,0,0.4);
 }
 
 .text-field[type="search"]:focus {
-	border-bottom: 1.5px solid rgba(0,0,0,0.4);
+	border-bottom: 2px solid rgba(0, 31, 84, 0.7);
 }
 
 .text-field:focus {
@@ -93,7 +104,7 @@ nav {
 }
 
 #ride-card {
-	position: absolute;
+	position: fixed;
 	bottom: 0;
 
 	display: flex;
@@ -147,7 +158,6 @@ button {
 
 	width: 100vw;
 	height: 25vh;
-
 }
 
 #events-container {
@@ -167,14 +177,16 @@ button {
 }
 
 .event {
-	box-sizing: border-box;
 	width: 80%;
 	height: 85%;
+}
 
-	border-radius: 10px;
-	border-bottom: 2px solid rgba(0,0,0,0.25);
-
+.place, .event {
 	background-color: rgba(217, 217, 217,0.8);
+	box-shadow: 0 2px 5.3px 0px rgba(0,0,0,0.2);
+	border-radius: 10px;
+	border-bottom: 2px solid rgba(0,0,0,0.38);
+	padding: 0;
 }
 
 main {
@@ -185,10 +197,10 @@ main {
 .heading {
 	font-family: "Montserrat", sans-serif;
 	color: rgb(0, 31, 84);
-	font-weight: 700;
+	font-weight: 600;
 	font-size: 25px;
 	margin: 0;
-	margin-top: 2vw;
+	margin-top: 0.5vh;
 	margin-left: 10vw;
 }
 
@@ -215,15 +227,9 @@ main {
 	height: 30vw;
 	aspect-ratio: 1 / 1; /* square blocks */
 
-	padding: 0;
-
-	border-radius: 10px;
-	border-bottom: 2px solid rgba(0,0,0,0.38);
-
-	background-color: rgba(217, 217, 217,0.8);
-
 	margin-top: 2vh;
 }
+
 
 /* In every 2nd row (4n-1), remove aspect-ratio for a rectangle */
 #places-container > .place:nth-child(3n) {
@@ -259,34 +265,30 @@ main {
 	margin: 0;
 }
 
-#description-container {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-
-	margin-bottom: 5vh;
-}
-
-#description-container .place {
-	margin-left: 10vw;
-	width: 40vw;
-	height: 40vw;
-}
-
 #description {
 	display: inline-block;
 
-	margin-left: 5vw;
-	margin-right: 7vw;
-
-	font-size: 15px;
+	text-align: justify;
+	font-size: 12px;
 	font-weight: 300;
 	color: rgba(0,0,0,0.62);
+}
+
+#description-container, 
+#location-container,
+#time-container {
+	display: flex;
+	align-items: center;
+
+	padding-left: 10vw;
+	padding-right: 10vw;
+	padding-top: 0;
 }
 
 #location-container {
 	margin:auto;
 	margin-top: 1vh;
+	margin-bottom: 2vh;
 
 	display: flex;
 	justify-content: center;
@@ -301,3 +303,7 @@ main {
 	margin:0;
 }
 
+#time-container {
+	margin-top: 1vh;
+	font-weight: 400;
+}
