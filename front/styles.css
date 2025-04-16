@@ -5,6 +5,7 @@ body {
 	padding: 0;
 	margin: 0;
 
+
 	font-family: "Montserrat", sans-serif;
 
 	height: 100vh;
@@ -187,11 +188,15 @@ button {
 	border-radius: 10px;
 	border-bottom: 2px solid rgba(0,0,0,0.38);
 	padding: 0;
+
+	display: flex;
+	align-items: end;
 }
 
 main {
 	width: 100vw;
 	margin-top: 1.5vh;
+	padding-bottom: 27vh;
 }
 
 .heading {
@@ -212,8 +217,8 @@ main {
 	align-items: center;
 	align-content: center;
 
-	grid-template-columns: auto auto; /* 2 columns */
-	gap: 0;
+	grid-template-columns: auto; /* 1 columns */
+	gap: 1vh;
 
 	width: 100vw;
 	margin-top: 1.75vh;
@@ -223,27 +228,28 @@ main {
 
 /* .place styling */
 .place {
-	width: 30vw;
-	height: 30vw;
-	aspect-ratio: 1 / 1; /* square blocks */
+	width: 75vw;
+	height: 25vw; 
 
 	margin-top: 2vh;
+
+
 }
 
+.place p, .event p {
+	margin: 0;
+	padding: 0;
+	
+	color: white;
+	text-shadow: 0 2px 5px rgba(0,0,0,0.7);
 
-/* In every 2nd row (4n-1), remove aspect-ratio for a rectangle */
-#places-container > .place:nth-child(3n) {
-  aspect-ratio: unset; /* remove the square aspect */
-  width: 75vw;
-  height: 55vw; /* height for the rectangular block */
-  grid-column: 1 / -1; /* spans both columns */
-}
+	margin-left: 5%;
+	margin-bottom: 3%;
 
-#places-container > .place:last-child:nth-child(even) {
-  aspect-ratio: unset; /* remove the square aspect */
-  width: 75vw;
-  height: 25vw; /* height for the rectangular block */
-  grid-column: 1 / -1; /* spans both columns */
+	font-size: 15px;
+	font-weight: 500;
+
+	position: relative;
 }
 
 /* Places.html */
