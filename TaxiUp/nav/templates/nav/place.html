@@ -1,0 +1,34 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Place</title>
+
+	<!--Get Screen Dimensions-->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<!-- <link rel="stylesheet" href="./styles.css"/>  -->
+	<link rel="stylesheet" type="text/css" href="{% static 'nav/styles.css' %}">
+</head>
+<body>
+	<link rel="stylesheet" type="text/css" href="{% static 'nav/style.css' %}">
+	<nav>
+		<input class="text-field" type="search" placeholder="Search Places"/>
+	</nav>
+
+	<article>
+		<p class="heading">Place</p>
+		<div id="description-container">
+			<div class="place"></div>
+			<p id="description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum consequat ultrices felis, in vestibulum dui rhoncus eu.</p>
+		</div>
+		<p class="heading">Location</p>
+		<div id="location-container">
+			<p id="location">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+		</div>
+	</article>
+
+	<div id="go-to-container">
+		<button id="request-ride">Go To</button>
+	</div>
+</body>
+</html>
