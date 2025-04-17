@@ -1,5 +1,6 @@
 from django.shortcuts import render
 import math
+from .models import Point
 
 # Create your views here.
 
@@ -11,7 +12,9 @@ def displacement(p1,p2):
 
 
 def main(request):
-    return render(request, 'nav/main.html')
+    places = Point.objects.all()
+    return render(request, 'nav/index.html', {"places":places})
+
 
 def page(request):
     return render(request, 'nav/page.html')
