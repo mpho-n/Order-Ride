@@ -50,6 +50,6 @@ def loginView(request):
             login(request, user)
             return redirect('dashboard')
         else:
-            return render(request, 'login.html', {'error': 'Invalid credentials'})
+            return render(request, 'nav/login.html', {'error': 'Invalid credentials'})
     
-    return render(request, 'login.html')
+    return render(request, 'nav/login.html')
