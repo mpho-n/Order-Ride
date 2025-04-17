@@ -81,7 +81,6 @@ nav {
 	border-bottom: 2px solid rgb(2, 46, 93);
 }
 
-.text-field[type="search"]:not(:placeholder-shown),
 .text-field[type="search"]:-webkit-autofill {
 	background-color: rgba(229, 229, 229, 1) !important;
 	background-image: url("./source/icons/search.svg") !important;
@@ -172,7 +171,7 @@ button {
 
 	text-shadow: 0 9px 11.8px rgba(0,0,0,0.25);
 
-	transition: 0.05s ease-out;
+	transition: 0.1s ease-out !important;
 }
 
 button:active {
@@ -211,15 +210,22 @@ button:active {
 
 .place, .event {
 	background-color: rgba(217, 217, 217,0.8);
+
 	box-shadow: 0 2px 5.3px 0px rgba(0,0,0,0.2);
+	box-shadow:inset 0 -20px 30px -15px rgba(0,0,0,0.7);
+
 	border-radius: 10px;
-	border-bottom: 2px solid rgba(0,0,0,0.38);
+	border-bottom: 3px solid rgb(2, 46, 93);
 	padding: 0;
 
 	display: flex;
 	align-items: end;
 
-	transition: 0.15s ease-in-out;
+	background-size: cover !important;
+	background-position: center !important;
+	background-repeat: no-repeat;
+
+	transition: 0.3s ease-in-out;
 }
 
 .place p, .event p {
@@ -227,13 +233,13 @@ button:active {
 	padding: 0;
 	
 	color: white;
-	text-shadow: 0 2px 5px rgba(0,0,0,0.7);
+	text-shadow: 0 2px 2px rgba(0,0,0,0.9);
 
 	margin-left: 5%;
 	margin-bottom: 3%;
 
 	font-size: 15px;
-	font-weight: 500;
+	font-weight: 600;
 
 	position: relative;
 
@@ -302,11 +308,11 @@ main {
 /* .place styling */
 .place {
 	width: 75vw;
-	height: 25vw; 
+	height: 35vw; 
 
 	margin-top: 2vh;
 
-
+	background: url("./source/Engineering3.jpg");
 }
 
 /* Places.html */
@@ -379,4 +385,3 @@ main {
 	justify-content: center;
 	align-items: center;
 }
-
