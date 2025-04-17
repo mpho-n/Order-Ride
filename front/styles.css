@@ -20,6 +20,22 @@ body {
 	user-select: none;
 }
 
+#back {
+	z-index: 1100;
+	background: url("./source/icons/back.svg") no-repeat;
+	background-size: 250%;
+	background-position: 50% 50%;
+
+	width: 7vw;
+	aspect-ratio: 1/1;
+
+	position: fixed;
+	top: 3vh;
+	left: 5vw;
+
+	display: none;
+}
+
 nav {
 	display: flex;
 	justify-content: center;
@@ -141,6 +157,8 @@ nav {
 
 	border:none;
 	border-top: 1px solid rgba(0,0,0,0.2);
+
+	visibility: hidden;
 }
 
 
@@ -212,7 +230,7 @@ button:active {
 	background-color: rgba(217, 217, 217,0.8);
 
 	box-shadow: 0 2px 5.3px 0px rgba(0,0,0,0.2);
-	box-shadow:inset 0 -20px 30px -15px rgba(0,0,0,0.7);
+	/* box-shadow:inset 0 -20px 30px -15px rgba(0,0,0,0.5); */
 
 	border-radius: 10px;
 	border-bottom: 3px solid rgb(2, 46, 93);
@@ -311,8 +329,6 @@ main {
 	height: 35vw; 
 
 	margin-top: 2vh;
-
-	background: url("./source/Engineering3.jpg");
 }
 
 /* Places.html */
@@ -329,7 +345,7 @@ main {
 
 	margin:auto;
 
-	display:none;
+	visibility: hidden;
 }
 
 #go-to-container button {
