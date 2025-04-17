@@ -25,7 +25,7 @@
 		<p class="heading">Places</p>
 		<div id="places-container">
 			{% for place in places %}
-			<a href="localhost:8000/main">
+			<a href="localhost:8000/main?"place=old>
 			<div class="place">
 				<img src="{% static 'nav/images/exampleoldarts.jpg' %}" alt="Image of {{ place.name }}">
 				<p> {{place.name}} </p> </div>
