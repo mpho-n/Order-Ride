@@ -49,5 +49,6 @@ def place(request):
     cost = math.ceil(rate*disp)
     print(disp)
     print(cost)
-    return render(request, 'nav/place.html')
+
+    return render(request, 'nav/index.html', {"places":[point]})
 

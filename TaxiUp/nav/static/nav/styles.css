@@ -16,6 +16,24 @@ body {
 	-moz-osx-font-smoothing: grayscale;width: 100vw;
 
 	overflow: auto;
+
+	user-select: none;
+}
+
+#back {
+	z-index: 1100;
+	background: url("./source/icons/back.svg") no-repeat;
+	background-size: 250%;
+	background-position: 50% 50%;
+
+	width: 7vw;
+	aspect-ratio: 1/1;
+
+	position: fixed;
+	top: 3vh;
+	left: 5vw;
+
+	display: none;
 }
 
 nav {
@@ -71,10 +89,24 @@ nav {
 	border-bottom: 1px solid rgba(0,0,0,0.2);
 	background-image: url("./source/icons/search.svg");
 	box-shadow: 0 3px 16px rgba(0,0,0,0.4);
+
+	transition: 0.05s ease-out;
 }
 
 .text-field[type="search"]:focus {
-	border-bottom: 2px solid rgba(0, 31, 84, 0.7);
+	border-bottom: 2px solid rgb(2, 46, 93);
+}
+
+.text-field[type="search"]:-webkit-autofill {
+	background-color: rgba(229, 229, 229, 1) !important;
+	background-image: url("./source/icons/search.svg") !important;
+	transition: background 9999s ease-in-out 0s;
+}
+
+.text-field[type="search"]::-webkit-search-cancel-button {
+	-webkit-appearance: none;
+	appearance: none;
+	display: none;
 }
 
 .text-field:focus {
@@ -125,7 +157,11 @@ nav {
 
 	border:none;
 	border-top: 1px solid rgba(0,0,0,0.2);
+
+	visibility: hidden;
 }
+
+
 
 #destination {
 	background-image: url("./source/icons/pin.svg");
@@ -149,9 +185,17 @@ button {
 
 	margin-top:7.5%;
 
-	box-shadow: 0 12px 16.4px 3px rgba(0,0,0,0.22);
+	box-shadow: 0 12px 16.4px 3px rgba(0,0,0,0.1);
 
 	text-shadow: 0 9px 11.8px rgba(0,0,0,0.25);
+
+	transition: 0.1s ease-out !important;
+}
+
+button:active {
+	box-shadow: 0 12px 16.4px 3px rgba(0,0,0,0.22);
+	background-color: rgb(2, 46, 93);
+	font-size: 36px;
 }
 
 #events {
@@ -184,13 +228,66 @@ button {
 
 .place, .event {
 	background-color: rgba(217, 217, 217,0.8);
+
 	box-shadow: 0 2px 5.3px 0px rgba(0,0,0,0.2);
+	/* box-shadow:inset 0 -20px 30px -15px rgba(0,0,0,0.5); */
+
 	border-radius: 10px;
-	border-bottom: 2px solid rgba(0,0,0,0.38);
+	border-bottom: 3px solid rgb(2, 46, 93);
 	padding: 0;
 
 	display: flex;
 	align-items: end;
+
+	background-size: cover !important;
+	background-position: center !important;
+	background-repeat: no-repeat;
+
+	transition: 0.3s ease-in-out;
+}
+
+.place p, .event p {
+	margin: 0;
+	padding: 0;
+	
+	color: white;
+	text-shadow: 0 2px 2px rgba(0,0,0,0.9);
+
+	margin-left: 5%;
+	margin-bottom: 3%;
+
+	font-size: 15px;
+	font-weight: 600;
+
+	position: relative;
+
+	transition: 0.05s ease-in-out;
+}
+
+.place:active, .event:active {
+	border-bottom: 2px solid rgb(2, 46, 93);
+	box-shadow: 0 2px 10px 0px rgba(0,0,0,0.3);
+}
+
+.place:active p, .event:active p {
+	font-size: 16px;
+	font-weight: 700;
+}
+
+#main-page { 
+	display: none;
+}
+
+#place-page {
+	display: none;
+}
+
+#event-page {
+	display: none;
+}
+
+#search-page {
+	display: none;
 }
 
 main {
@@ -209,7 +306,7 @@ main {
 	margin-left: 10vw;
 }
 
-#places-container {
+#places-container, #results-container {
 	/* Grid alignment */
 	display: grid;
 	justify-content: center;
@@ -229,27 +326,9 @@ main {
 /* .place styling */
 .place {
 	width: 75vw;
-	height: 25vw; 
+	height: 35vw; 
 
 	margin-top: 2vh;
-
-
-}
-
-.place p, .event p {
-	margin: 0;
-	padding: 0;
-	
-	color: white;
-	text-shadow: 0 2px 5px rgba(0,0,0,0.7);
-
-	margin-left: 5%;
-	margin-bottom: 3%;
-
-	font-size: 15px;
-	font-weight: 500;
-
-	position: relative;
 }
 
 /* Places.html */
@@ -265,6 +344,8 @@ main {
 	height: 15vh;
 
 	margin:auto;
+
+	visibility: hidden;
 }
 
 #go-to-container button {
@@ -314,3 +395,9 @@ main {
 	font-weight: 400;
 }
 
+#place-container {
+	display: flex;
+
+	justify-content: center;
+	align-items: center;
+}

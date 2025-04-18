@@ -7,33 +7,86 @@
 
 	<!--Get Screen Dimensions-->
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
 </head>
 <body>
+	<div id="back"></div>
+
 	<nav>
 		<input class="text-field" id="search" type="search" placeholder="Search Places"/>
 	</nav>
+	
+	<div id="main-page">
+		<!--
+		<div id="events">
+			<p class="heading">Events</p>
+			<div id="events-container">
+				<div class="event"><p>Nasty C concert</p></div>
+			</div>
+		</div>
+		-->
 
-	<div id="events">
-		<p class="heading">Events</p>
-		<div id="events-container">
-			<div class="event"><p>Nasty C concert</p></div>
+		<main>
+			<p class="heading">Places</p>
+			<div id="places-container">
+				{% for place in places %}
+				<!--<a id="{{place.name}}" href="http://localhost:8000/place?place={{place.id}}">-->
+				<div id="{{place.name}}" class="place" style="background-image: url('{% static 'nav/images/exampleoldarts.jpg' %}')">					
+					<p id="{{place.name}}" > {{place.name}} </p> </div>
+				<!--</a>-->
+				{% endfor %}
+			</div>
+		</main>
+
+	</div>
+	<div id="place-page"> 
+		<article>
+			<p class="heading">Engineering III</p>
+			<div id="place-container">
+				<div class="place"></div>
+			</div>
+
+			<div id="description-container">
+				<p id="description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum consequat ultrices felis, in vestibulum dui rhoncus eu.</p>
+			</div>
+
+		</article>
+	</div>
+	<div id="event-page">
+		<article>
+			<div id="events">
+				<p class="heading">Piazza Festival</p>
+				<div id="events-container">
+					<div class="event"></div>
+				</div>
+			</div>
+
+			<div id="description-container">
+				<p id="description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum consequat ultrices felis, in vestibulum dui rhoncus eu.</p>
+			</div>
+
+			<p class="heading">Location</p>
+			<div id="location-container">
+				<p id="location">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+			</div>
+
+			<p class="heading">Time</p>
+			<div id="time-container">
+				<p id="location">12:00</p>
+			</div>
+
+		</article>
+	</div>
+	<div id="search-page">
+		<p class="heading">Results</p>
+		<div id="results-container">
+			<div class="place"><p>Engineering III</p></div>
 		</div>
 	</div>
 
-	<main>
-		<p class="heading">Places</p>
-		<div id="places-container">
-			{% for place in places %}
-			<a id="{{place.name}}" href="http://localhost:8000/place?place={{place.id}}">
-			<div id="{{place.name}}" class="place">
-				<img id="{{place.name}}" src="{% static 'nav/images/exampleoldarts.jpg' %}" alt="Image of {{ place.name }}">
-				<p id="{{place.name}}" > {{place.name}} </p> </div>
-			</a>
-			{% endfor %}
-		</div>
-	</main>
-
+	<!-- Buttons -->
+	<div id="go-to-container">
+		<button id="go-to">Go To</button>
+	</div>
 
 	<div id="ride-card">
 		<input class="text-field" id="destination" placeholder="Select a destination" readonly="true"/>
@@ -41,15 +94,17 @@
 	</div>
 
 	<script src="{% static 'nav/js/location.js' %}"></script>
-	<script src="{% static 'nav/js/script.js' %}"></script>
-	<script>
-		  document.addEventListener("DOMContentLoaded", function () {
-			const links = document.querySelectorAll("a");
+    <!--<script src="{% static 'nav/js/script.js' %}"></script>-->
+	<script src="{% static 'nav/js/nav.js' %}"></script>
 
-			links.forEach((link) => {
-				link.href = link.href+`&lat=${encodeURIComponent(Math.floor(latitude*1000000)/1000000)}&long=${encodeURIComponent(Math.floor(longitude*1000000)/1000000)}`;
-			});
-		});
-	</script>
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+		  const links = document.querySelectorAll("a");
+
+		  links.forEach((link) => {
+			  link.href = link.href+`&lat=${encodeURIComponent(Math.floor(latitude*1000000)/1000000)}&long=${encodeURIComponent(Math.floor(longitude*1000000)/1000000)}`;
+		  });
+	  });
+  </script>
 </body>
 </html>
