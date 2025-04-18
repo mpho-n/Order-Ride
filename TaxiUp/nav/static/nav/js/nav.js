@@ -38,7 +38,13 @@ document.addEventListener("DOMContentLoaded", function () {
 		// Makes switching between pages easier
 		
 		togglePage.lastPage =  togglePage.lastPage || "";
-		prevPage = togglePage.lastPage;
+
+		// Prevent infinite looping with back button
+		if (page != togglePage.lastPage && page !== prevPage) {
+			prevPage = togglePage.lastPage;
+		} else {
+			prevPage = "main";
+		}
 
 		if (togglePage.lastPage !== "") {
 			pages.get(togglePage.lastPage).style.display = "none"; 
@@ -81,6 +87,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 		/* TODO: Get place data to populate the page*/
 
+		console.log("hello world");
 		togglePage("place"); 
 	}
 
@@ -94,12 +101,18 @@ document.addEventListener("DOMContentLoaded", function () {
 		
 		/* TODO: Send request to server for places */
 		
-		window.location.href = `/?search=${encodeURIComponent(input)}&lat=${encodeURIComponent(Math.floor(latitude*1000000)/1000000)}&long=${encodeURIComponent(Math.floor(longitude*1000000)/1000000)}`;
+
+		// Commented out because it took user to log in page instead
+		// Can we fetch all places that match search from search query to database?
+		
+		/*window.location.href = `/?search=${encodeURIComponent(input)}&lat=${encodeURIComponent(Math.floor(latitude*1000000)/1000000)}&long=${encodeURIComponent(Math.floor(longitude*1000000)/1000000)}`;*/
+
 		togglePage("search");
 	}
 
 	// Loads placeClicked to all place tiles
-	const placeTiles = document.querySelectorAll(".place");
+	// Skip the place tile in the place page
+	const placeTiles = document.querySelectorAll(".place:not(.noninteractive)");
 
 	for (const element of placeTiles) {
 		element.addEventListener("click", function () {
