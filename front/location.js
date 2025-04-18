@@ -1,3 +1,6 @@
+let latitude = -25.750875408510314;
+let longitude = 28.226933011439606;
+
 function getLocation() {
 	if (navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(success, error);
@@ -8,8 +11,8 @@ function getLocation() {
 
 function success(position) {
 	// Do something with the position
-	let latitude = position.coords.latitude;
-	let longitude = position.coords.longitude;
+	latitude = position.coords.latitude;
+	longitude = position.coords.longitude;
 }
 
 function error() {

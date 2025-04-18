@@ -1,6 +1,6 @@
 let search = document.getElementById("search");
 
-function requestSearch() {
+async function requestSearch() {
 	// Check if valid search and send to search request to server
 	let input = search.value.trim();		
 
@@ -9,6 +9,10 @@ function requestSearch() {
 	}
 	
 	// Send POST request to server
+	getLocation();
+	//window.location.href = `/filter/?search=${encodeURIComponent(input)}`;
+	window.location.href = `/main/filter/?search=${encodeURIComponent(input)}&lat=${encodeURIComponent(latitude)}&long=${encodeURIComponent(longitude)}`;
+
 }
 
 search.addEventListener("search", requestSearch);

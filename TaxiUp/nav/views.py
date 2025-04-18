@@ -9,7 +9,7 @@ from django.contrib.auth import authenticate, login
 
 
 def displacement(p1,p2):
-    return math.sqrt((p2[0] - p1[0])**2 + (p2[1] - p1[1])**2)
+    return math.sqrt((p2[0] - p1[0])**2 + (p2[1] - p1[1])**2)*100
 
 
 
@@ -34,22 +34,20 @@ def page(request):
     return render(request, 'nav/page.html')
 
 def place(request):
+    pointID = int(request.GET.get("place"))
+    latInit = float(request.GET.get('lat'))
+    longInit = float(request.GET.get('long'))
+    point = Point.objects.get(id=pointID)
+    latFin = float(point.lat)
+    longFin = float(point.long)
+
+    rate = 5
+
+
+    #disp = displacement([latInit,longInit],[latFin,longFin])
+    disp = displacement([-25.7559255795962,28.228450561373222],[-25.75561636442707,28.225451851599328])
+    cost = math.ceil(rate*disp)
+    print(disp)
+    print(cost)
     return render(request, 'nav/place.html')
 
-
-
-
-
-def loginView(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-
-        if user is not None:
-            login(request, user)
-            return redirect('dashboard')
-        else:
-            return render(request, 'nav/login.html', {'error': 'Invalid credentials'})
-    
-    return render(request, 'nav/login.html')

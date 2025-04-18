@@ -93,7 +93,8 @@ document.addEventListener("DOMContentLoaded", function () {
 		}
 		
 		/* TODO: Send request to server for places */
-
+		
+		window.location.href = `/?search=${encodeURIComponent(input)}&lat=${encodeURIComponent(Math.floor(latitude*1000000)/1000000)}&long=${encodeURIComponent(Math.floor(longitude*1000000)/1000000)}`;
 		togglePage("search");
 	}
 
