@@ -132,7 +132,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		/* TODO: Fetch place data from server */
 
 		let destination = document.getElementById("destination");
-		destination.value = "Engineering III";
+		destination.value = "Old Arts";
 
 		togglePage("main");
 	});
