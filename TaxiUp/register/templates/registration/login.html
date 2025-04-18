@@ -41,10 +41,20 @@
 		}
 
 		form {
+			display: flex;
 			width: 100%;
 			display: flex;
 			flex-direction: column;
 			gap: 1.5rem;
+		}
+
+		/* Ensure div containers with inputs center */
+		div:has(input[type="text"]),
+		div:has(input[type="password"]) {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			flex-direction: column;
 		}
 
 		p {
@@ -57,13 +67,16 @@
 		label {
 			display: block;
 			margin-bottom: 0.4rem;
+			margin-left: 0.5rem;
 			font-weight: 600;
 			font-size: 0.95rem;
+
+			align-self: start;
 		}
 
 		input[type="text"],
 		input[type="password"] {
-			width: 100%;
+			width: 85%;
 			padding: 0.7rem 1rem;
 			border: 1px solid #ccc;
 			border-radius: 4px;
