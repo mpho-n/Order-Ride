@@ -1,4 +1,13 @@
 document.addEventListener("DOMContentLoaded", function () {
+	getLocation();
+	let name;
+	let destLat;
+	let destLong;
+	let currLat;
+	let currLong;
+	let cost;
+	let disp;
+
 
 	const pages = new Map([
 		["main", document.getElementById("main-page")],
@@ -35,6 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	}
 
 	function togglePage(page) {
+		getLocation();
 		// Makes switching between pages easier
 		
 		togglePage.lastPage =  togglePage.lastPage || "";
@@ -61,6 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				break;
 			case "search":
 				toggleButton("none");
+				
 				break;
 			case "place":
 			case "event":
@@ -84,8 +95,27 @@ document.addEventListener("DOMContentLoaded", function () {
 		// - Valid Place containers given
 		// - Valid ID attached to the place matches valid ID in database
 		let placeID = place.id;
+		
 
 		/* TODO: Get place data to populate the page*/
+		fetch(`/place/${placeID}/?lat=${latitude}&long=${longitude}`)
+		.then(res => res.json())
+		.then(data => {
+			name=data.name;
+			destLat=data.lat;
+			destLong=data.long;
+			currLat = latitude;
+			currLong = longitude;
+			cost= data.cost;
+			disp = data.displacement;
+
+			document.getElementById('headPlace').textContent = name;
+			document.getElementById('placeContainer1').style.backgroundImage = `url('static/nav/images/${placeID}.jpg')`;
+			document.getElementById('description').innerHTML = `distance: ${disp}km<br>cost: R${cost}`;
+			document.getElementById('destination').value = name;
+			document.getElementById('destination').innerHTML = placeID;
+
+		});
 
 		console.log("hello world");
 		togglePage("place"); 
@@ -105,8 +135,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		// Commented out because it took user to log in page instead
 		// Can we fetch all places that match search from search query to database?
 		
-		/*window.location.href = `/?search=${encodeURIComponent(input)}&lat=${encodeURIComponent(Math.floor(latitude*1000000)/1000000)}&long=${encodeURIComponent(Math.floor(longitude*1000000)/1000000)}`;*/
-
+		window.location.href = `/?search=${encodeURIComponent(input)}`;
 		togglePage("search");
 	}
 
@@ -129,10 +158,12 @@ document.addEventListener("DOMContentLoaded", function () {
 	buttons.get("go-to").addEventListener("click", function (){
 		// Set place as destination
 
-		/* TODO: Fetch place data from server */
+		/* TODO: Fetch place data from server 
+			got place data from server stored in global variables above
+		*/
 
 		let destination = document.getElementById("destination");
-		destination.value = "Old Arts";
+		destination.value = name;
 
 		togglePage("main");
 	});
