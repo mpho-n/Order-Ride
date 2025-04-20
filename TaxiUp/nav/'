@@ -487,6 +487,9 @@ main {
 	justify-content: center;
 	align-items: center;
 
+	border: 1px solid red;
+
+	max-width: 60%;
 }
 
 #driver-info-text {
@@ -496,29 +499,23 @@ main {
 	justify-content: end;
 
 	overflow:hidden;
-	max-width: 40vw;
 }
 
 /* Trip time of arrival */
 #trip-card p#trip-eta-card {
 	color: rgb(0, 31, 84);
 	font-weight: 600;
-
-	word-wrap: none;
 }
 
 /* Driver Details */
 #driver-info-container #driver-name {
 	color: rgb(0, 31, 84);
 	font-weight: 600;
-	font-size: 1rem;
-
-	word-wrap: none;
+	font-size: 20px;
 }
 
 #driver-info-container #driver-location {
 	font-size: 15px;
-	font-size: 0.7rem;
 }
 
 #driver-profile {
@@ -530,7 +527,6 @@ main {
 	background-color: rgba(217, 217, 217, .28);
 
 	margin-right: 3vw;
-
 }
 
 /* Trip price */
@@ -542,7 +538,7 @@ main {
 
 	border-radius: 2.5px;
 
-	margin-left: 2.5vw;
+	margin-left: 3vw;
 }
 
 #trip-price p {
