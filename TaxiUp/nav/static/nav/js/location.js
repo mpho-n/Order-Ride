@@ -1,5 +1,5 @@
-let latitude = -25.750875408510314;
-let longitude = 28.226933011439606;
+let latitude;
+let longitude;
 
 function getLocation() {
 	if (navigator.geolocation) {

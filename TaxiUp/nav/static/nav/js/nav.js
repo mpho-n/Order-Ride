@@ -1,13 +1,19 @@
 document.addEventListener("DOMContentLoaded", function () {
 	getLocation();
-	let name;
-	let destLat;
-	let destLong;
-	let currLat;
-	let currLong;
-	let cost;
-	let disp;
 
+	const destination = {
+		active: false,
+		name: "",
+		latitude: 0,
+		longitude: 0,
+		cost: 0,
+		displacement: 0,
+	}
+
+	const user = {
+		latitude,
+		longitude,
+	}
 
 	const pages = new Map([
 		["main", document.getElementById("main-page")],
@@ -26,6 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	let search = document.getElementById("search");
 	let backButton = document.getElementById("back");
 	let prevPage = "";
+	let destDisplay = document.getElementById("destination").value;
 
 	function toggleSearch(show) {
 		// Handles showing and hiding of search bar
@@ -79,6 +86,10 @@ document.addEventListener("DOMContentLoaded", function () {
 				// Clear search bar
 				search.value = "";
 				toggleButton("request");
+
+				// Reset url
+				window.history.pushState(null, '', "/");
+
 				break;
 			case "search":
 				toggleButton("none");
@@ -94,17 +105,18 @@ document.addEventListener("DOMContentLoaded", function () {
 		}
 
 		// Show back button only non main pages
-		if (page !== "main" && page !== "trip") {
 			backButton.style.display = "initial";
-		} else {
+		if (page == "main" || page == "trip") {
 			backButton.style.display = "none";
+		} else {
+			backButton.style.display = "initial";
 		}
 
 		// Dont show search in trip page
-		if (page !== "trip") {
-			toggleSearch(true);
-		} else {
+		if (page == "trip") {
 			toggleSearch(false);
+		} else {
+			toggleSearch(true);
 		}
 
 		togglePage.lastPage = page;
@@ -116,12 +128,10 @@ document.addEventListener("DOMContentLoaded", function () {
 		// - Valid ID attached to the place matches valid ID in database
 		let placeID = place.id;
 		
-
-		/* TODO: Get place data to populate the page*/
 		fetch(`/place/${placeID}/?lat=${latitude}&long=${longitude}`)
 		.then(res => res.json())
 		.then(data => {
-			name=data.name;
+			destination.name=data.name;
 			destLat=data.lat;
 			destLong=data.long;
 			currLat = latitude;
@@ -129,15 +139,14 @@ document.addEventListener("DOMContentLoaded", function () {
 			cost= data.cost;
 			disp = data.displacement;
 
-			document.getElementById('headPlace').textContent = name;
+			document.getElementById('headPlace').textContent = destination.name;
 			document.getElementById('placeContainer1').style.backgroundImage = `url('static/nav/images/${placeID}.jpg')`;
 			document.getElementById('description').innerHTML = `Distance: ${disp}km<br>Trip fare: R${cost}`;
-			document.getElementById('destination').value = name;
+			document.getElementById('destination').value = destination.name;
 			document.getElementById('destination').innerHTML = placeID;
 
 		});
 
-		console.log("hello world");
 		togglePage("place"); 
 	}
 
@@ -151,11 +160,8 @@ document.addEventListener("DOMContentLoaded", function () {
 		
 		/* TODO: Send request to server for places */
 		
-
-		// Commented out because it took user to log in page instead
-		// Can we fetch all places that match search from search query to database?
-		
-		window.location.href = `/?search=${encodeURIComponent(input)}`;
+		let arg = "/?search=" + encodeURIComponent(input);
+		window.history.pushState(null, '', arg);
 		togglePage("search");
 	}
 
@@ -168,6 +174,27 @@ document.addEventListener("DOMContentLoaded", function () {
 			placeClicked(this)
 		});
 	}
+
+	// Request ride button 
+	buttons.get("request").addEventListener("click", function (){
+		if (!destination.active) {
+			alert("No destination was selected!");
+			return;
+		}
+
+		togglePage("trip");
+	});
+
+	// Cancel trip button
+	buttons.get("trip").addEventListener("click", function () {
+		if (!confirm("About to quit trip to " + destination.name + "!")) {
+			return;
+		}
+
+		togglePage("main");
+		destination.active = false; // Indicate trip inactive
+		destDisplay.value = "Select a destination";
+	});
 
 	// Back button
 	backButton.addEventListener("click", function () {
@@ -182,13 +209,21 @@ document.addEventListener("DOMContentLoaded", function () {
 			got place data from server stored in global variables above
 		*/
 
-		let destination = document.getElementById("destination");
-		destination.value = name;
+		destination.value = destination.name;
+		destination.active = true; // Indicate trip active
+		
+		// Modify the destination output to user
+		destDisplay.value = destination.name;
 
 		togglePage("main");
 	});
 
+	// Cancel trip
+	buttons.get("trip").addEventListener("click", function () {
+		/* TODO: Add code to cancel trip cleanly */
+	});
+
 	search.addEventListener("search", requestSearch);
 
-	togglePage("trip");
+	togglePage("main");
 });
