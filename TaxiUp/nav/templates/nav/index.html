@@ -6,7 +6,7 @@
 	<link rel="stylesheet" href="{% static 'nav/styles.css' %}"/>
 
 	<!--Get Screen Dimensions-->
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </head>
 <body>
 	<div id="back"></div>
@@ -84,6 +84,21 @@
 		</div>
 	</div>
 
+	<div id="trip-page">
+		<p class="trip-heading">Trip in progress...</p>
+		<p class="trip-heading" id="trip-eta">Driver <span>3</span> minutes away</p>
+
+		<div id="destination-container">
+			<p id="trip-destination">Traveling to Engineering III</p>
+			<div class="place noninteractive"></div>
+
+			<p>Distance: 500m</p>
+			<p>Trip Fare: R50</p>
+		</div>
+
+
+	</div>
+
 	<!-- Buttons -->
 	<div id="go-to-container">
 		<button id="go-to">Go To</button>
@@ -92,6 +107,26 @@
 	<div id="ride-card">
 		<input class="text-field" id="destination" placeholder="Select a destination" readonly="true"/>
 		<button id="request-ride">Request</button>
+	</div>
+
+	<div id="trip-card">
+		<p id="trip-eta-card">3 minutes away</p>
+
+		<div id="driver-price-container">
+			<div id="driver-info-container">
+				<div id="driver-profile"></div>
+				<div id="driver-info-text">
+					<p id="driver-name">John Doe</p>
+					<p id="driver-location">Aula</p>
+				</div>
+			</div>
+
+			<div id="trip-price">
+				<p>R50</p>
+			</div>
+		</div>
+
+		<button id="cancel-trip">Cancel</button>
 	</div>
 
 	<script src="{% static 'nav/js/location.js' %}"></script>
