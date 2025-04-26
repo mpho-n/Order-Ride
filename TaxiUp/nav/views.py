@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 import math
-from .models import Point
+from .models import Point, Trip
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
+from datetime import datetime
 
 # Create your views here.
 
@@ -75,4 +76,13 @@ def place(request, place_id):
         return JsonResponse(data)
     except point.DoesNotExist:
         return JsonResponse({"error":"Place not found"}, status=404)
+
+def driver(request):
+    #now = datetime.now()
+    #if request.method == 'GET':
+    #    tripNo = int(request.GET.get("trip"))
+    #    trip = Trip.objects.get(id=tripNo)
+
+    dueTrips = Trip.objects.filter(done=False)
+    return render(request, 'nav/driver.html',{'trips':dueTrips})
 

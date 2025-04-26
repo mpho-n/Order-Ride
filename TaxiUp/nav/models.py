@@ -19,8 +19,8 @@ class Trip(models.Model):
     pickedUp = models.DateTimeField( null=True, blank=True)
     completed = models.DateTimeField( null=True, blank=True)
 
-    pickUp = models.CharField(max_length=21,validators=[MinLengthValidator(19)])
-    dropOff = models.CharField(max_length=21,validators=[MinLengthValidator(19)])
+    pickUp = models.ForeignKey(Point, null=True, blank=True, on_delete=models.SET_NULL, related_name='pickup_point' )
+    dropOff = models.ForeignKey(Point, null=True, blank=True, on_delete=models.SET_NULL, related_name='dropoff_point' )
     code = models.CharField(max_length=6)
 
     driver = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name='driven_rides' )
@@ -29,6 +29,7 @@ class Trip(models.Model):
     PickupSec = models.FloatField(null=True, blank=True)
     TimeSec = models.FloatField(null=True, blank=True)
     speed = models.FloatField(null=True, blank=True)
+    done = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.booked
+        return self.booked.strftime("%Y-%m-%d %H:%M:%S")
