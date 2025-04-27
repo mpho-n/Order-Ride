@@ -21,3 +21,13 @@ function error() {
 }
 
 getLocation();
+
+function populate(){
+	document.addEventListener("DOMContentLoaded", function () {
+		const links = document.querySelectorAll("a");
+
+		links.forEach((link) => {
+			link.href = link.href+`&lat=${encodeURIComponent(Math.floor(latitude*1000000)/1000000)}&long=${encodeURIComponent(Math.floor(longitude*1000000)/1000000)}`;
+		});
+	});
+}

@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		longitude: 0,
 		cost: 0,
 		displacement: 0,
+		id: 0,
 	}
 
 	const user = {
@@ -144,6 +145,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			document.getElementById('description').innerHTML = `Distance: ${disp}km<br>Trip fare: R${cost}`;
 			document.getElementById('destination').value = destination.name;
 			document.getElementById('destination').innerHTML = placeID;
+			destination.id = placeID;
 
 		});
 
@@ -160,8 +162,17 @@ document.addEventListener("DOMContentLoaded", function () {
 		
 		/* TODO: Send request to server for places */
 		
-		let arg = "/?search=" + encodeURIComponent(input);
-		window.history.pushState(null, '', arg);
+		//let arg = "/?search=" + encodeURIComponent(input);
+		//window.history.pushState(null, '', arg);
+		fetch(`/?search=${input}`)
+		.then(res => res.text())
+		.then(data => {
+			let result = data;
+			//prepare the page
+			let container = document.getElementById('results-container');
+			container.innerHTML = data;
+		});
+
 		togglePage("search");
 	}
 
@@ -206,14 +217,24 @@ document.addEventListener("DOMContentLoaded", function () {
 		// Set place as destination
 
 		/* TODO: Fetch place data from server 
+		
 			got place data from server stored in global variables above
 		*/
+		fetch(`/book/?lat=${latitude}&long=${longitude}&dest=${destination.id}`)
+		.then(res => res.json())
+		.then(data => {
+			destination.active = true;
+			destination.name = data.name;
+
+		});
 
 		destination.value = destination.name;
 		destination.active = true; // Indicate trip active
 		
 		// Modify the destination output to user
 		destDisplay.value = destination.name;
+		document.getElementById('trip-destination').innerHTML = destination.name;
+		document.getElementById('trip-destination-pic').style.backgroundImage = `url('static/nav/images/${destination.id}.jpg')`;
 
 		togglePage("main");
 	});

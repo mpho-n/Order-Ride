@@ -28,7 +28,7 @@
 		<main>
 			<p class="heading">Places</p>
 			<div id="places-container">
-				{% for place in places %}
+				{% for place in all %}
 				<!--<a id="{{place.name}}" href="http://localhost:8000/place?place={{place.id}}">-->
 
 				<div id="{{place.id}}" class="place" style="background-image: url('{% static 'nav/images/' %}{{ place.id }}.jpg')">					
@@ -80,7 +80,15 @@
 	<div id="search-page">
 		<p class="heading">Results</p>
 		<div id="results-container">
-			<div class="place"><p>Old-Arts</p></div>
+			{% if search %}
+			{% for place in places %}
+			<!--<a id="{{place.name}}" href="http://localhost:8000/place?place={{place.id}}">-->
+
+			<div id="{{place.id}}" class="place" style="background-image: url('{% static 'nav/images/' %}{{ place.id }}.jpg')">					
+				<p id="{{place.name}}" > {{place.name}} </p> </div>
+			<!--</a>-->
+			{% endfor %}
+			{% endif %}
 		</div>
 	</div>
 
@@ -90,7 +98,7 @@
 
 		<div id="destination-container">
 			<p id="trip-destination">Traveling to Engineering III</p>
-			<div class="place noninteractive"></div>
+			<div class="place noninteractive" id="trip-destination-pic"></div>
 
 			<p>Distance: 500m</p>
 			<p>Trip Fare: R50</p>
@@ -131,15 +139,9 @@
 
 	<script src="{% static 'nav/js/location.js' %}"></script>
 	<script src="{% static 'nav/js/nav.js' %}"></script>
-
 	<script>
-		document.addEventListener("DOMContentLoaded", function () {
-		  const links = document.querySelectorAll("a");
+		getLocation();
+	</script>
 
-		  links.forEach((link) => {
-			  link.href = link.href+`&lat=${encodeURIComponent(Math.floor(latitude*1000000)/1000000)}&long=${encodeURIComponent(Math.floor(longitude*1000000)/1000000)}`;
-		  });
-	  });
-  </script>
 </body>
 </html>

@@ -2,8 +2,10 @@ from django.shortcuts import render, redirect
 import math
 from .models import Point, Trip
 from django.contrib.auth import authenticate, login
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from datetime import datetime
+from django.templatetags.static import static
+import random, string
 
 # Create your views here.
 
@@ -13,22 +15,46 @@ from datetime import datetime
 def displacement(p1,p2):
     return math.sqrt((p2[0] - p1[0])**2 + (p2[1] - p1[1])**2)*100
 
+def nearest(p1):
+    all = Point.objects.all()
+    dist = 1000
+    num = 0
+    for point in all:
+        p2 = [point.lat,point.long]
+        if displacement(p1,p2) < dist:
+            dist = displacement(p1,p2)
+            num = point.id
+    return num
 
-
+def genCode():
+    pool = string.ascii_uppercase + string.digits
+    code = ''.join(random.choice(pool) for _ in range(6))
+    return code
 
 def main(request):
+    search = False
     if request.user.is_authenticated:
+        all = Point.objects.all()
         if request.method == 'GET':
             query = request.GET.get("search")
             if query:
                 places = Point.objects.filter(name__icontains=query)
-                return render(request, 'nav/index.html', {"places":places})
+                search = True
+                out = ""
+                for place in places:
+                    #out += '<div id="{{place.id}}" class="place" style="background-image: url(\'{% static \'nav/images/\' %}{{ place.id }}.jpg\')">	<p id="{{place.name}}" > {{place.name}} </p> </div>'
+                    image_url = static(f'nav/images/{place.id}.jpg')
+                    out += f'<div id="{place.id}" class="place" style="background-image: url(\'{image_url}\')">'
+                    out += f'<p id="{place.name}">{place.name}</p></div>'
+
+                print(search)
+                return HttpResponse(out, content_type='text/plain')
             else:
-                places = Point.objects.all()
-                return render(request, 'nav/index.html', {"places":places})
+                search = False
+                print(search)
+                return render(request, 'nav/index.html', {"places":all, "all":all, "search":search})
         else:
-                places = Point.objects.all()
-                return render(request, 'nav/index.html', {"places":places})
+                return render(request, 'nav/index.html', {"places":all, "all":all, "search":search})
     else:
         return redirect('login')
 
@@ -86,3 +112,17 @@ def driver(request):
     dueTrips = Trip.objects.filter(done=False)
     return render(request, 'nav/driver.html',{'trips':dueTrips})
 
+def book(request):
+    if request.user.is_authenticated:
+        if request.method == 'GET':
+            Code = genCode()
+            pickup = nearest([float(request.GET.get("lat")),float(request.GET.get("long"))])
+            data ={
+                "pickup": Point.objects.get(id=pickup).name,
+                "dropoff": Point.objects.get(id=request.GET.get("dest")).name
+            }
+            trip = Trip(pickUp=Point.objects.get(id=pickup), dropOff= Point.objects.get(id=request.GET.get("dest")), booked=datetime.now(),code=Code, passenger=request.user)
+            trip.save()
+        return JsonResponse(data)
+    else:
+        return redirect('login')
