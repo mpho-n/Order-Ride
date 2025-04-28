@@ -3,102 +3,70 @@
 <html>
 <head>
 	<title>Order Ride Interface</title>
-	<link rel="stylesheet" href="{% static 'nav/driver_styles.css' %}"/>
+	<link rel="stylesheet" href="{% static 'nav/styles.css' %}"/>
+	<link rel="stylesheet" href="{% static 'nav/driver.css' %}"/>
 
 	<!--Get Screen Dimensions-->
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+	<style>
+	</style>
 </head>
 <body>
 	<div id="back"></div>
 
-	
-	<div id="main-page">
-		<!--
-		<div id="events">
-			<p class="heading">Events</p>
-			<div id="events-container">
-				<div class="event"><p>Piazza Festival</p></div>
+	<div id="orders-page">
+		<div class="heading" id="accept-order-heading">Accept Orders:</div>
+		<div id="orders-container">
+			{% for trip in trips %}
+			<div class="order">
+				<p>{{trip.pickUp}} to {{trip.dropOff}}</p>
 			</div>
+			{% endfor %}
+		</div>
+	</div>
+		
+	<!-- TODO: Make code for confirmation to accept trip-->
+	<div id="trip-info-page">
+		<p class="order-heading">Trip Accepted</p>
+		<p class="order-heading" id="order-confirm">Passenger Notified</p>
+
+		<!--Passenger Information-->
+		<p class="heading">Passenger</p>
+		<p class="order-info">Jane Doe</p>
+
+		<!--Trip Information-->
+		<p class="heading">Trip</p>
+		<p class="order-info">Date: 20 April 2025</p>
+		<p class="order-info">Requested: 17:00</p>
+		<p class="order-info">Pick Up: Marenskey</p>
+		<p class="order-info">Drop Off: Engineering III</p>
+
+		<div class="ride-code-container">
+			<p class="ride-code">CODE: 34822</p>
+		</div>
+
+		<!--
+		<div id="-container";>
+			{% for trip in trips %}
+
+			<div id="{{trip.id}}" class="place" style="background-color: darkslategrey;">	
+				<a id="{{trip.id}}" href="http://localhost:8000/trip?trip={{trip.id}}">
+					<p id="time{{trip.name}}" > Time booked{{trip.booked}} </p><br>
+					<p id="find{{trip.name}}" > Pick-up location{{trip.pickUp}} </p><br>
+					<p id="drop{{trip.name}}" > Drop-off location{{trip.dropOff}} </p><br>
+					<p id="pass{{trip.name}}" > Passenger: {{trip.passenger}} </p><br>
+					<p id="code{{trip.name}}" > Passenger code:{{trip.code}} </p>
+				</a>
+			</div>
+
+			{% endfor %}
 		</div>
 		-->
-
-		<main>
-			<p class="heading">Orders</p>
-			<div id="places-container";>
-				{% for trip in trips %}
-                <div id="{{trip.id}}" class="place" style="background-color: darkslategrey;">	
-
-				<a id="{{trip.id}}" href="http://localhost:8000/trip?trip={{trip.id}}">
-
-								
-					<p id="time{{trip.name}}" > Time booked{{trip.booked}} </p><br>
-                    <p id="find{{trip.name}}" > Pick-up location{{trip.pickUp}} </p><br>
-                    <p id="drop{{trip.name}}" > Drop-off location{{trip.dropOff}} </p><br>
-                    <p id="pass{{trip.name}}" > Passenger: {{trip.passenger}} </p><br>
-                    <p id="code{{trip.name}}" > Passenger code:{{trip.code}} </p>
-                
-				</a>
-            </div>
-				{% endfor %}
-			</div>
-		</main>
-
-	</div>
-	
-	<div id="event-page">
-		<article>
-			<div id="events">
-				<p class="heading">Piazza Festival</p>
-				<div id="events-container">
-					<div class="event noninteractive"></div>
-				</div>
-			</div>
-
-			<div id="description-container">
-				<p id="description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum consequat ultrices felis, in vestibulum dui rhoncus eu.</p>
-			</div>
-
-			<p class="heading">Location</p>
-			<div id="location-container">
-				<p id="location">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-			</div>
-
-			<p class="heading">Time</p>
-			<div id="time-container">
-				<p id="location">12:00</p>
-			</div>
-
-		</article>
-	</div>
-	<div id="search-page">
-		<p class="heading">Results</p>
-		<div id="results-container">
-			<div class="place"><p>Old-Arts</p></div>
-		</div>
 	</div>
 
-	<!-- Buttons -->
-	<div id="go-to-container">
-		<button id="go-to">Go To</button>
+	<div id="cancel-trip-container">
+		<button id="cancel-trip">Cancel</button>
 	</div>
-
-	<div id="ride-card">
-		<input class="text-field" id="destination" placeholder="Select a destination" readonly="true"/>
-		<button id="request-ride">Request</button>
-	</div>
-<!--
-	<script src="{% static 'nav/js/location.js' %}"></script>
-    <script src="{% static 'nav/js/script.js' %}"></script>
-	<script src="{% static 'nav/js/nav.js' %}"></script>
-
-	<script>
-		document.addEventListener("DOMContentLoaded", function () {
-		  const links = document.querySelectorAll("a");
-
-		  links.forEach((link) => {
-			  link.href = link.href+`&lat=${encodeURIComponent(Math.floor(latitude*1000000)/1000000)}&long=${encodeURIComponent(Math.floor(longitude*1000000)/1000000)}`;
-		  });
-	  });
-  </script>-->
 </body>
 </html>

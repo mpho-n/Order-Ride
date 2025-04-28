@@ -228,7 +228,7 @@ button:active {
 	height: 85%;
 }
 
-.place, .event {
+.place, .event, .order {
 	background-color: rgba(217, 217, 217,0.8);
 
 	box-shadow: 0 2px 5.3px 0px rgba(0,0,0,0.2);
@@ -248,7 +248,7 @@ button:active {
 	transition: 0.3s ease-in-out;
 }
 
-.place p, .event p {
+.place p, .event p, .order p {
 	margin: 0;
 	padding: 0;
 	
@@ -266,12 +266,12 @@ button:active {
 	transition: 0.05s ease-in-out;
 }
 
-.place:active, .event:active {
+.place:active, .event:active, .order:active {
 	border-bottom: 2px solid rgb(2, 46, 93);
 	box-shadow: 0 2px 10px 0px rgba(0,0,0,0.3);
 }
 
-.place:active p, .event:active p {
+.place:active p, .event:active p, .order:active p {
 	font-size: 16px;
 	font-weight: 700;
 }
@@ -338,7 +338,7 @@ main {
 }
 
 /* Places.html */
-#go-to-container {
+#go-to-container, #cancel-trip-container {
 	display:flex;
 	justify-content: center;
 	align-items: center;
@@ -354,7 +354,7 @@ main {
 	visibility: hidden;
 }
 
-#go-to-container button {
+#go-to-container button, #cancel-trip-container button {
 	margin: 0;
 }
 
@@ -408,7 +408,7 @@ main {
 	align-items: center;
 }
 
-.trip-heading {
+.trip-heading, .order-heading {
 	color: rgb(0, 31, 84);
 	font-weight: 600;
 	font-size: 30px;
@@ -418,7 +418,7 @@ main {
 	margin: 0;
 }
 
-#trip-eta {
+#trip-eta, #order-confirm {
 	font-weight: 500;
 	font-size: 17px;
 }
@@ -560,4 +560,16 @@ main {
 	align-items: center;
 	
 	width: 100%;
+}
+
+.ride-code-container {
+	width: 100vw;
+	box-sizing: border-box;
+}
+
+.ride-code {
+	color: rgb(3, 64, 120);
+	font-weight: 650;	
+	font-size: 20px;
+	text-align: center;
 }
