@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
+.back {
+	z-index: 1000;
+}
+
 #orders-page { 
 	display: none;
 }
@@ -9,6 +13,8 @@
 	top: 0vh;
 	left: 0vw;
 	margin: 0;
+
+	z-index: 1000;
 
 	width: 100vw;
 
@@ -47,7 +53,7 @@
 }
 
 #trip-info-page {
-	display: initial;
+	display: none;
 }
 
 #order-confirm {
@@ -66,7 +72,7 @@
 }
 
 #cancel-trip-container {
-	visibility: visible;
+	visibility: hidden;
 }
 
 .ride-code-container {
@@ -82,3 +88,4 @@
 	font-size: 30px;
 	text-align: center;
 }
+

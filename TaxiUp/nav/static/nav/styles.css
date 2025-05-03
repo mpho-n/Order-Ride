@@ -21,7 +21,7 @@ body {
 	user-select: none;
 }
 
-#back {
+.back {
 	z-index: 1100;
 	background: url("./source/icons/back.svg") no-repeat;
 	background-size: 250%;

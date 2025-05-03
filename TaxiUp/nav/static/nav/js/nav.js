@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	]);
 
 	let search = document.getElementById("search");
-	let backButton = document.getElementById("back");
+	let backButton = document.getElementById("user-back-button");
 	let prevPage = "";
 	let destDisplay = document.getElementById("destination").value;
 
@@ -237,11 +237,6 @@ document.addEventListener("DOMContentLoaded", function () {
 		document.getElementById('trip-destination-pic').style.backgroundImage = `url('static/nav/images/${destination.id}.jpg')`;
 
 		togglePage("main");
-	});
-
-	// Cancel trip
-	buttons.get("trip").addEventListener("click", function () {
-		/* TODO: Add code to cancel trip cleanly */
 	});
 
 	search.addEventListener("search", requestSearch);
