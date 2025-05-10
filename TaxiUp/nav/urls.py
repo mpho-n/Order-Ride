@@ -6,6 +6,7 @@ urlpatterns = [
     path('place/<int:place_id>/', views.place, name='place'),
     path('book/', views.book, name='book'),
     path('driver/', views.driver, name='place'),
+    path('trip/', views.tripInfo, name='tripDriver')
    
     #path('s/', views.filterMain, name='home'),
 ]

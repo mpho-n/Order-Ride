@@ -137,12 +137,12 @@ def book(request):
 def tripInfo(request):
     if request.user.is_authenticated:
         if request.method == 'GET':          
-            trip = Point.objects.get(id=request.GET.get("id"))
+            trip = Trip.objects.get(id=request.GET.get("id"))
             data ={
-                "pickup": trip.pickUp,
-                "dropoff": trip.dropOff,
+                "pickup": str(trip.pickUp),
+                "dropoff": str(trip.dropOff),
                 "code":trip.code,
-                "passenger": trip.passenger,
+                "passenger": str(trip.passenger),
                 "date": trip.booked.date(),
                 "time":trip.booked.time(),
             }

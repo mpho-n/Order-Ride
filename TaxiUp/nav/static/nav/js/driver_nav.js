@@ -56,7 +56,12 @@ document.addEventListener("DOMContentLoaded", function () {
 		fetch(`/trip/?lat=${latitude}&long=${longitude}&id=${orderID}`)
 		.then(res => res.json())
 		.then(data => {
-			document.getElementById('')
+			document.getElementById('passenger').innerHTML = data.passenger;
+			document.getElementById('date').innerHTML = 'Date: '+data.date;
+			document.getElementById('time').innerHTML = 'Requested: '+data.time;
+			document.getElementById('pick-up').innerHTML = 'Pick Up: '+data.pickup;
+			document.getElementById('drop-off').innerHTML = 'Drip Off: '+data.dropoff;
+			document.getElementById('ride-code').innerHTML = data.code;
 		});
 
 		togglePage("trip");
