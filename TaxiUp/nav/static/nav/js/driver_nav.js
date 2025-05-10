@@ -53,6 +53,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 		/* TODO: Load order details here */
 
+		fetch(`/trip/?lat=${latitude}&long=${longitude}&id=${orderID}`)
+		.then(res => res.json())
+		.then(data => {
+			document.getElementById('')
+		});
+
 		togglePage("trip");
 	}
 

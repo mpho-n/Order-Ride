@@ -115,13 +115,38 @@ def driver(request):
 def book(request):
     if request.user.is_authenticated:
         if request.method == 'GET':
+            rate = 4
             Code = genCode()
             pickup = nearest([float(request.GET.get("lat")),float(request.GET.get("long"))])
+            displ = displacement([float(request.GET.get("lat")),float(request.GET.get("long"))],[Point.objects.get(id=pickup).lat,Point.objects.get(id=pickup).long])
             data ={
                 "pickup": Point.objects.get(id=pickup).name,
-                "dropoff": Point.objects.get(id=request.GET.get("dest")).name
+                "dropoff": Point.objects.get(id=request.GET.get("dest")).name,
+                "code":Code,
+                "cost": math.ceil(rate*displ),
+                "displacement": round(displ,3),
             }
             trip = Trip(pickUp=Point.objects.get(id=pickup), dropOff= Point.objects.get(id=request.GET.get("dest")), booked=datetime.now(),code=Code, passenger=request.user)
+            trip.save()
+        return JsonResponse(data)
+    else:
+        return redirect('login')
+    
+
+
+def tripInfo(request):
+    if request.user.is_authenticated:
+        if request.method == 'GET':          
+            trip = Point.objects.get(id=request.GET.get("id"))
+            data ={
+                "pickup": trip.pickUp,
+                "dropoff": trip.dropOff,
+                "code":trip.code,
+                "passenger": trip.passenger,
+                "date": trip.booked.date(),
+                "time":trip.booked.time(),
+            }
+            trip.driver = request.user
             trip.save()
         return JsonResponse(data)
     else:

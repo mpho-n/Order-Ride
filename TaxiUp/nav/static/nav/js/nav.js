@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		cost: 0,
 		displacement: 0,
 		id: 0,
+		code: "",
 	}
 
 	const user = {
@@ -224,19 +225,32 @@ document.addEventListener("DOMContentLoaded", function () {
 		.then(res => res.json())
 		.then(data => {
 			destination.active = true;
-			destination.name = data.name;
+			destination.dropoff = data.dropoff;
+			destination.code = data.code;
+			destination.displacement = data.displacement;
+			destination.cost = data.cost;
 
+			destination.value = destination.name;
+			destination.active = true; // Indicate trip active
+			
+			// Modify the destination output to user
+			destDisplay.value = destination.name;
+			document.getElementById('trip-destination').innerHTML = destination.dropoff;
+			document.getElementById('trip-destination-pic').style.backgroundImage = `url('static/nav/images/${destination.id}.jpg')`;
+			document.getElementById('trip-heading').innerHTML = "Ride pending";
+			document.getElementById('fare').innerHTML = "Trip Fare: R"+String(destination.cost);
+			document.getElementById('distance').innerHTML = "Distance: "+String(destination.displacement)+"km";
+			document.getElementById('ride-code').innerHTML = "CODE: "+String(destination.code);
+			document.querySelector("#trip-eta span").textContent = "...";
+			document.getElementById('trip-eta-card').innerHTML = "...";
+			document.getElementById('driver-info-text').innerHTML = "loading driver";
+			document.getElementById('trip-price').innerHTML = "R"+String(destination.cost);
+			console.log(destination.code);
+			console.log(data.displacement);
+			togglePage("main");
 		});
 
-		destination.value = destination.name;
-		destination.active = true; // Indicate trip active
-		
-		// Modify the destination output to user
-		destDisplay.value = destination.name;
-		document.getElementById('trip-destination').innerHTML = destination.name;
-		document.getElementById('trip-destination-pic').style.backgroundImage = `url('static/nav/images/${destination.id}.jpg')`;
 
-		togglePage("main");
 	});
 
 	search.addEventListener("search", requestSearch);
