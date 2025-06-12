@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			document.getElementById('date').innerHTML = 'Date: '+data.date;
 			document.getElementById('time').innerHTML = 'Requested: '+data.time;
 			document.getElementById('pick-up').innerHTML = 'Pick Up: '+data.pickup;
-			document.getElementById('drop-off').innerHTML = 'Drip Off: '+data.dropoff;
+			document.getElementById('drop-off').innerHTML = 'Drop Off: '+data.dropoff;
 			document.getElementById('ride-code').innerHTML = data.code;
 		});
 
