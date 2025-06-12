@@ -242,9 +242,9 @@ document.addEventListener("DOMContentLoaded", function () {
 			document.getElementById('distance').innerHTML = "Distance: "+String(destination.displacement)+"km";
 			document.getElementById('ride-code').innerHTML = "CODE: "+String(destination.code);
 			document.querySelector("#trip-eta span").textContent = "...";
-			document.getElementById('trip-eta-card').innerHTML = "...";
-			document.getElementById('driver-info-text').innerHTML = "loading driver";
-			document.getElementById('trip-price').innerHTML = "R"+String(destination.cost);
+			document.getElementById('trip-eta-card').innerHTML = "... minutes away";
+			document.getElementById('driver-info-text').innerHTML = "Loading Driver";
+			document.getElementById('trip-price').children[0].innerHTML = "R"+String(destination.cost);
 			console.log(destination.code);
 			console.log(data.displacement);
 			togglePage("main");
