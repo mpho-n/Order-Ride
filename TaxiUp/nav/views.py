@@ -132,12 +132,39 @@ def book(request):
     else:
         return redirect('login')
     
+def pickedUp(request):
+    if request.user.is_authenticated:
+        if request.method == 'GET':          
+            trip = Trip.objects.get(id=request.GET.get("id"))
+            trip.pickedUp = datetime.now()
+    print('done')
+    data ={"success":True}
+    return JsonResponse(data)
 
+
+def tripOver(request):
+    if request.user.is_authenticated:
+        if request.method == 'GET':          
+            trip = Trip.objects.get(id=request.GET.get("id"))
+            trip.done = True
+            trip.completed = datetime.now()
+    print('done')
+    data ={"success":True}
+    return JsonResponse(data)
+
+def getLat(ID):
+    location = Point.objects.get(id=ID)
+    return location.lat
+
+def getLong(ID):
+    location = Point.objects.get(id=ID)
+    return location.long
 
 def tripInfo(request):
     if request.user.is_authenticated:
         if request.method == 'GET':          
             trip = Trip.objects.get(id=request.GET.get("id"))
+            dropoff = trip.dropOff
             data ={
                 "pickup": str(trip.pickUp),
                 "dropoff": str(trip.dropOff),
@@ -145,6 +172,11 @@ def tripInfo(request):
                 "passenger": str(trip.passenger),
                 "date": trip.booked.date(),
                 "time":trip.booked.time(),
+                "destLat": getLat(trip.dropOff.id),
+                "destLong": getLong(trip.dropOff.id),
+                "pickLat":getLat(trip.pickUp.id),
+                "pickLong":getLong(trip.pickUp.id),
+                "ID":trip.id
             }
             trip.driver = request.user
             trip.save()

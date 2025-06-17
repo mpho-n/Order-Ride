@@ -13,6 +13,8 @@ function success(position) {
 	// Do something with the position
 	latitude = position.coords.latitude;
 	longitude = position.coords.longitude;
+	console.log(latitude);
+	console.log(longitude);
 }
 
 function error() {
