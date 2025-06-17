@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		id: 0,
 		code: "",
 	}
-
+	getLocation();
 	const user = {
 		latitude,
 		longitude,

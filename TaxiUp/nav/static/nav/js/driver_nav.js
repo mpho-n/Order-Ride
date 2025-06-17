@@ -1,4 +1,26 @@
 document.addEventListener("DOMContentLoaded", function () {
+
+	const destination = {
+		active: false,
+		name: "",
+		latitude: 0,
+		longitude: 0,
+		//cost: 0,
+		//displacement: 0,
+		tripId: 0,
+		//code: "",
+	}
+	const pickup = {
+		fetched: false,
+		name: "",
+		latitude: 0,
+		longitude: 0,
+		//cost: 0,
+		//displacement: 0,
+		tripId: 0,
+		//code: "",
+	}
+
 	const pages = new Map([
 		["orders", document.getElementById("orders-page")],
 		["trip", document.getElementById("trip-info-page")],
@@ -41,8 +63,13 @@ document.addEventListener("DOMContentLoaded", function () {
 		pages.get(page).style.display = "initial";
 
 		switch (page) {
+			case "orders":
+				toggleButton("none");
+				window.location.hash = "#/orders";
+				break;
 			case "trip":
 				toggleButton("trip");
+				window.location.hash = "#/trip";
 				break;
 			default:
 				toggleButton("none");
@@ -65,8 +92,14 @@ document.addEventListener("DOMContentLoaded", function () {
 			document.getElementById('date').innerHTML = 'Date: '+data.date;
 			document.getElementById('time').innerHTML = 'Requested: '+data.time;
 			document.getElementById('pick-up').innerHTML = 'Pick Up: '+data.pickup;
-			document.getElementById('drop-off').innerHTML = 'Drip Off: '+data.dropoff;
+			document.getElementById('drop-off').innerHTML = 'Drop Off: '+data.dropoff;
 			document.getElementById('ride-code').innerHTML = data.code;
+			destination.latitude = data.destLat;
+			destination.longitude = data.destLong;
+			pickup.latitude = data.pickLat;
+			pickup.longitude = data.pickLong;
+			destination.tripId = data.ID;
+			pickup.fetched = false;
 		});
 
 		togglePage("trip");
@@ -112,4 +145,71 @@ document.addEventListener("DOMContentLoaded", function () {
 	}
 
 	togglePage("orders");
+
+
+
+	//checking current location
+	let intervalId = null;
+
+	function displacementP(){
+		const y = (pickup.latitude-latitude)
+		const x= (pickup.longitude-longitude)
+		return Math.sqrt(y*y+x*x)*100
+	}
+
+	function displacementD(){
+		const y = (destination.latitude-latitude)
+		const x= (destination.longitude-longitude)
+		return Math.sqrt(y*y+x*x)*100
+	}
+
+	function runEveryFiveSeconds() {
+		getLocation();
+		console.log("Interval is running on #trip page...");
+
+		if (pickup.fetched==true){
+			if (displacementD()<0.1){
+				//trip completed
+				fetch(`/completed/?id=${destination.tripId}`)
+				.then(res => res.json())
+				.then(data => {
+					
+				});
+				togglePage("orders");
+			}
+		} else 
+			if (displacementP()<0.1){
+				//person fetched
+				fetch(`/fetched/?id=${destination.tripId}`)
+				.then(res => res.json())
+				.then(data => {
+					
+				});
+				pickup.fetched = true;
+				//togglePage("orders");
+		}
+	}
+
+	function manageTripInterval() {
+    const currentHash = window.location.hash;
+
+		if (currentHash === "#/trip" && pages.get("trip")) {
+		if (!intervalId) {
+			intervalId = setInterval(runEveryFiveSeconds, 5000);
+			console.log("Started interval for #/trip");
+		}
+		} else {
+		if (intervalId) {
+			clearInterval(intervalId);
+			intervalId = null;
+			console.log("Stopped interval (not on #/trip)");
+		}
+		}
+  }
+
+  // Run on initial load
+  manageTripInterval();
+
+  // Run when the hash changes
+  window.addEventListener("hashchange", manageTripInterval);
 });
