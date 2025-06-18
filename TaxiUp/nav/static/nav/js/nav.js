@@ -95,8 +95,9 @@ document.addEventListener("DOMContentLoaded", function () {
 			case "main":
 				// Clear search bar
 				search.value = "";
+				console.log("here 1");
 				toggleButton("request");
-
+				console.log("here 1");
 				// Reset url
 				window.history.pushState(null, '', "/");
 				window.location.hash = "";
@@ -217,17 +218,22 @@ document.addEventListener("DOMContentLoaded", function () {
 	// Cancel trip button
 	buttons.get("trip").addEventListener("click", function () {
 		if (!confirm("About to quit trip to " + destination.name + "!")) {
-			fetch(`/cancel/?id=${trip}`)
+			console.log("cancelation aborted");
+			return;
+		} else {
+			console.log("canceling");
+			fetch(`/cancel/?id=${destination.tripID}`)
 			.then(res => res.json())
 			.then(data => {
-
+				clearInterval(intervalId);
+				intervalId = null;
+				destination.tripID = 0;
+				togglePage("main");
+				destination.active = false; // Indicate trip inactive
+				destDisplay.value = "Select a destination";
 			})
-			return;
+			
 		}
-
-		togglePage("main");
-		destination.active = false; // Indicate trip inactive
-		destDisplay.value = "Select a destination";
 	});
 
 	// Back button
@@ -279,6 +285,12 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 
 	function duringTrip() {
+	if (destination.status == 0){
+		clearInterval(intervalId);
+		intervalId = null;
+		console.log("Cleared interval");
+		return;
+	}
 	fetch(`/status/?id=${destination.tripID}`)
 		.then(res => {
 			if (!res.ok) throw new Error("Failed to fetch trip status");
@@ -286,6 +298,9 @@ document.addEventListener("DOMContentLoaded", function () {
 		})
 		.then(data => {
 			if (data.status==0){
+				clearInterval(intervalId);
+				intervalId = null;
+				console.log("Stopped interval (not on #/trip)");
 				togglePage("main");
 				return;
 			}
@@ -302,18 +317,24 @@ document.addEventListener("DOMContentLoaded", function () {
 	function duringTripInterval() {
     const currentHash = window.location.hash;
 
-		if (currentHash === "#/trip" && pages.get("trip")) {
-		if (!intervalId) {
-			intervalId = setInterval(duringTrip, 5000);
-			console.log("Started interval for #/trip");
-		}
-		} else {
+		// Clear previous interval before setting a new one
 		if (intervalId) {
 			clearInterval(intervalId);
 			intervalId = null;
-			console.log("Stopped interval (not on #/trip)");
+			console.log("Cleared previous interval");
 		}
-		}
+		if (currentHash === "#/trip" && pages.get("trip")) {
+			if (!intervalId) {
+				intervalId = setInterval(duringTrip, 5000);
+				console.log("Started interval for #/trip");
+			}
+		} else {
+			if (intervalId) {
+				clearInterval(intervalId);
+				intervalId = null;
+				console.log("Stopped interval (not on #/trip)");
+			}
+		} 
   	}
 
 	search.addEventListener("search", requestSearch);

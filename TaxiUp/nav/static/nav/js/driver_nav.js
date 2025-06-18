@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				break;
 			case "trip":
 				toggleButton("trip");
-				window.location.hash = "#/trip";
+				window.location.hash = "#/trip_driver";
 				break;
 			default:
 				toggleButton("none");
@@ -204,7 +204,14 @@ document.addEventListener("DOMContentLoaded", function () {
 	function manageTripInterval() {
     const currentHash = window.location.hash;
 
-		if (currentHash === "#/trip" && pages.get("trip")) {
+		// Clear previous interval before setting a new one
+		if (intervalId) {
+			clearInterval(intervalId);
+			intervalId = null;
+			console.log("Cleared previous interval");
+		}
+
+		if (currentHash === "#/trip_driver" && pages.get("trip")) {
 		if (!intervalId) {
 			intervalId = setInterval(checkTrip, 5000);
 			console.log("Started interval for #/trip");
@@ -212,13 +219,13 @@ document.addEventListener("DOMContentLoaded", function () {
 		} else if (currentHash === "#/orders" && pages.get("orders")) {
 		if (!intervalId) {
 			intervalId = setInterval(checkOrders, 10000);
-			console.log("Started interval for #/trip");
+			console.log("Started interval for #/orders");
 		}
 		} else{
 		if (intervalId) {
 			clearInterval(intervalId);
 			intervalId = null;
-			console.log("Stopped interval (not on #/trip)");
+			console.log("Stopped interval (not on #/trip/orders)");
 		}
 		}
   	}
