@@ -9,6 +9,8 @@ urlpatterns = [
     path('trip/', views.tripInfo, name='tripDriver'),
     path('completed/', views.tripOver, name='tripDone'),
     path('fetched/', views.pickedUp, name='fetched'),
-
+    path('cancel/', views.cancel, name='cancel'),
+    path('confirm/', views.confirm, name='confirmTrip'),
+    path('status/', views.tripStatus, name='tripStatus'),
     #path('s/', views.filterMain, name='home'),
 ]

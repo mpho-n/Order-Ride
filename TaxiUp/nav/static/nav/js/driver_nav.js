@@ -24,11 +24,16 @@ document.addEventListener("DOMContentLoaded", function () {
 	const pages = new Map([
 		["orders", document.getElementById("orders-page")],
 		["trip", document.getElementById("trip-info-page")],
+		["cancel", document.getElementById("cancel-page")],
 	]);
 
 	const buttons = new Map([
 		["trip", document.getElementById("cancel-trip")],
+		["complete", document.getElementById("complete-ride")],
+		["quit", document.getElementById("quit-ride")],
 	]);
+
+	let backButton = document.getElementById("driver-back-button");
 
 	function toggleButton(button) {
 		// Makes showing and hiding the Request, and Go To button more manageable
@@ -66,6 +71,9 @@ document.addEventListener("DOMContentLoaded", function () {
 				toggleButton("trip");
 				window.location.hash = "#/trip";
 				break;
+			default:
+				toggleButton("none");
+				break;
 		}
 
 		togglePage.lastPage = page;
@@ -98,12 +106,40 @@ document.addEventListener("DOMContentLoaded", function () {
 	}
 
 	buttons.get("trip").addEventListener("click", function () {
-		if (!confirm("About to quit trip!")) {
+		togglePage("cancel");
+	});
+
+	backButton.addEventListener("click", function () {
+		togglePage("trip");
+	});
+	
+	buttons.get("complete").addEventListener("click", function () {
+		// Button to indicate trip completed
+		if (!confirm("About to COMPLETE trip")) {
 			return;
 		}
 
+		/* TODO: Process the completed trip */
+		fetch(`/completed/?id=${destination.tripId}`)
+				.then(res => res.json())
+				.then(data => {
+					
+				});
+		location.reload()
 		togglePage("orders");
 	});
+
+	buttons.get("quit").addEventListener("click", function () {
+		// Button to indicate trip quitted
+		if (!confirm("About to QUIT trip")) {
+			return;
+		}
+
+		/* TODO: Process the quitted trip */
+
+		togglePage("orders");
+	});
+
 
 	const orderTiles = document.querySelectorAll(".order");
 
@@ -132,7 +168,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		return Math.sqrt(y*y+x*x)*100
 	}
 
-	function runEveryFiveSeconds() {
+	function checkTrip() {
 		getLocation();
 		console.log("Interval is running on #trip page...");
 
@@ -144,6 +180,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				.then(data => {
 					
 				});
+				location.reload()
 				togglePage("orders");
 			}
 		} else 
@@ -158,23 +195,33 @@ document.addEventListener("DOMContentLoaded", function () {
 				//togglePage("orders");
 		}
 	}
-
+	
+	function checkOrders() {
+		getLocation();
+		console.log("Interval is running on #trip page...");
+		location.reload();
+	}
 	function manageTripInterval() {
     const currentHash = window.location.hash;
 
 		if (currentHash === "#/trip" && pages.get("trip")) {
 		if (!intervalId) {
-			intervalId = setInterval(runEveryFiveSeconds, 5000);
+			intervalId = setInterval(checkTrip, 5000);
 			console.log("Started interval for #/trip");
 		}
-		} else {
+		} else if (currentHash === "#/orders" && pages.get("orders")) {
+		if (!intervalId) {
+			intervalId = setInterval(checkOrders, 10000);
+			console.log("Started interval for #/trip");
+		}
+		} else{
 		if (intervalId) {
 			clearInterval(intervalId);
 			intervalId = null;
 			console.log("Stopped interval (not on #/trip)");
 		}
 		}
-  }
+  	}
 
   // Run on initial load
   manageTripInterval();

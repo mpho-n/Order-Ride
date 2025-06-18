@@ -562,14 +562,11 @@ main {
 	width: 100%;
 }
 
-.ride-code-container {
-	width: 100vw;
-	box-sizing: border-box;
-}
-
-.ride-code {
+#destination-container .ride-code {
 	color: rgb(3, 64, 120);
 	font-weight: 650;	
 	font-size: 20px;
 	text-align: center;
+
+	margin-top: 2vh;
 }
