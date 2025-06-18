@@ -529,6 +529,9 @@ main {
 	border-radius: 5px;
 
 	background-color: rgba(217, 217, 217, .28);
+	background-repeat: no-repeat;
+	background-size:cover;
+	background-position:center;
 
 	margin-right: 3vw;
 
