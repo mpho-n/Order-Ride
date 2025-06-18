@@ -34,10 +34,14 @@ def genCode():
 def main(request):
     search = False
     if request.user.is_authenticated:
+        if not request.user.is_staff:
+            return driver(request)
+        
         all = Point.objects.all()
         if request.method == 'GET':
             query = request.GET.get("search")
             if query:
+                print('chack')
                 places = Point.objects.filter(name__icontains=query)
                 search = True
                 out = ""
@@ -54,7 +58,7 @@ def main(request):
                 print(search)
                 return render(request, 'nav/index.html', {"places":all, "all":all, "search":search})
         else:
-                return render(request, 'nav/index.html', {"places":all, "all":all, "search":search})
+            return render(request, 'nav/index.html', {"places":all, "all":all, "search":search})
     else:
         return redirect('login')
 
@@ -104,13 +108,18 @@ def place(request, place_id):
         return JsonResponse({"error":"Place not found"}, status=404)
 
 def driver(request):
+    if request.user.is_authenticated:
+        if not request.user.is_staff:
+            return main(request)
     #now = datetime.now()
     #if request.method == 'GET':
     #    tripNo = int(request.GET.get("trip"))
     #    trip = Trip.objects.get(id=tripNo)
 
-    dueTrips = Trip.objects.filter(done=False)
-    return render(request, 'nav/driver.html',{'trips':dueTrips})
+        dueTrips = Trip.objects.filter(done=False).exclude(booked__isnull=True)
+        return render(request, 'nav/driver.html',{'trips':dueTrips})
+    else:
+        return redirect('login')
 
 def book(request):
     if request.user.is_authenticated:
@@ -119,25 +128,67 @@ def book(request):
             Code = genCode()
             pickup = nearest([float(request.GET.get("lat")),float(request.GET.get("long"))])
             displ = displacement([float(request.GET.get("lat")),float(request.GET.get("long"))],[Point.objects.get(id=pickup).lat,Point.objects.get(id=pickup).long])
+            trip = Trip(pickUp=Point.objects.get(id=pickup), dropOff= Point.objects.get(id=request.GET.get("dest")),code=Code, passenger=request.user)
+            trip.save()
             data ={
                 "pickup": Point.objects.get(id=pickup).name,
                 "dropoff": Point.objects.get(id=request.GET.get("dest")).name,
                 "code":Code,
                 "cost": math.ceil(rate*displ),
                 "displacement": round(displ,3),
+                "tripID": trip.id
+                #"driver": 
             }
-            trip = Trip(pickUp=Point.objects.get(id=pickup), dropOff= Point.objects.get(id=request.GET.get("dest")), booked=datetime.now(),code=Code, passenger=request.user)
-            trip.save()
         return JsonResponse(data)
     else:
         return redirect('login')
     
+def confirm(request):
+    if request.user.is_authenticated:
+        if request.method == 'GET':
+            trip = Trip.objects.get(id=request.GET.get("id"))
+            trip.booked = datetime.now()
+            trip.save()
+
+    data ={"success":True}
+    return JsonResponse(data)   
+
+def estimateTime():
+    return 2
+
+def tripStatus(request):
+    if request.user.is_authenticated:
+        if request.method == 'GET':          
+            trip = Trip.objects.get(id=request.GET.get("id"))
+            trip.pickedUp = datetime.now()
+            trip.save()
+            if trip.done:
+                sts=0
+            else: sts=1
+
+            if trip.driver is None:
+                drvr="Almost there"
+                drvrid=0
+                time = 5
+            else:
+                drvr=trip.driver.first_name
+                drvrid=trip.driver.id
+                time = estimateTime()
+            data ={
+                "name" : drvr,
+                "driverID" : drvrid,
+                "eta": time,
+                "status": sts,
+            }
+            return JsonResponse(data)
+
 def pickedUp(request):
     if request.user.is_authenticated:
         if request.method == 'GET':          
             trip = Trip.objects.get(id=request.GET.get("id"))
             trip.pickedUp = datetime.now()
-    print('done')
+            trip.save()
+            
     data ={"success":True}
     return JsonResponse(data)
 
@@ -148,6 +199,7 @@ def tripOver(request):
             trip = Trip.objects.get(id=request.GET.get("id"))
             trip.done = True
             trip.completed = datetime.now()
+            trip.save()
     print('done')
     data ={"success":True}
     return JsonResponse(data)
@@ -176,10 +228,22 @@ def tripInfo(request):
                 "destLong": getLong(trip.dropOff.id),
                 "pickLat":getLat(trip.pickUp.id),
                 "pickLong":getLong(trip.pickUp.id),
-                "ID":trip.id
+                "ID":trip.id,
             }
             trip.driver = request.user
             trip.save()
         return JsonResponse(data)
     else:
         return redirect('login')
+    
+def cancel(request):
+    if request.user.is_authenticated:
+        if request.method == 'GET':          
+            trip = Trip.objects.get(id=request.GET.get("id"))
+            #trip.delete()
+            trip.done = True
+            trip.save()
+    print('canceled')
+    data ={"success":True}
+    return JsonResponse(data)
+

@@ -10,12 +10,20 @@ document.addEventListener("DOMContentLoaded", function () {
 		displacement: 0,
 		id: 0,
 		code: "",
+		tripID:0,
 	}
+	const driver = {
+		id: 0,
+		name:"",
+		eta:1000
+	}
+	//let trip=0;
 	getLocation();
 	const user = {
 		latitude,
 		longitude,
 	}
+	let intervalId = null;//initialised for intervals on the page
 
 	const pages = new Map([
 		["main", document.getElementById("main-page")],
@@ -91,18 +99,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
 				// Reset url
 				window.history.pushState(null, '', "/");
+				window.location.hash = "";
 
 				break;
 			case "search":
 				toggleButton("none");
-				
+				window.location.hash = "";
 				break;
 			case "place":
 			case "event":
 				toggleButton("go-to");
+				window.location.hash = "";
 				break;
 			case "trip":
 				toggleButton("trip");
+				window.location.hash = "#/trip";
 				break;
 		}
 
@@ -194,12 +205,23 @@ document.addEventListener("DOMContentLoaded", function () {
 			return;
 		}
 
+		fetch(`/confirm/?id=${destination.tripID}`)
+			.then(res => res.json())
+			.then(data => {
+
+			})
+
 		togglePage("trip");
 	});
 
 	// Cancel trip button
 	buttons.get("trip").addEventListener("click", function () {
 		if (!confirm("About to quit trip to " + destination.name + "!")) {
+			fetch(`/cancel/?id=${trip}`)
+			.then(res => res.json())
+			.then(data => {
+
+			})
 			return;
 		}
 
@@ -229,6 +251,8 @@ document.addEventListener("DOMContentLoaded", function () {
 			destination.code = data.code;
 			destination.displacement = data.displacement;
 			destination.cost = data.cost;
+			driver.id = data.driver;
+			destination.tripID = data.tripID
 
 			destination.value = destination.name;
 			destination.active = true; // Indicate trip active
@@ -243,6 +267,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			document.getElementById('ride-code').innerHTML = "CODE: "+String(destination.code);
 			document.querySelector("#trip-eta span").textContent = "...";
 			document.getElementById('trip-eta-card').innerHTML = "... minutes away";
+			//document.getElementById('driver-profile').style.backgroundImage = `url('static/nav/images/e${destination}.jpg')`;
 			document.getElementById('driver-info-text').innerHTML = "Loading Driver";
 			document.getElementById('trip-price').children[0].innerHTML = "R"+String(destination.cost);
 			console.log(destination.code);
@@ -253,7 +278,48 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	});
 
+	function duringTrip() {
+	fetch(`/status/?id=${destination.tripID}`)
+		.then(res => {
+			if (!res.ok) throw new Error("Failed to fetch trip status");
+			return res.json();
+		})
+		.then(data => {
+			if (data.status==0){
+				togglePage("main");
+				return;
+			}
+			document.getElementById('driver-info-text').innerHTML = data.name;
+			document.getElementById('driver-profile').style.backgroundImage = `url('static/nav/images/e${data.driverID}.jpg')`;
+			document.getElementById('trip-eta-card').innerHTML = `${data.eta} minutes away`;
+			document.getElementById('eta-top').innerHTML = data.eta;
+		})
+		.catch(err => {
+			console.error("Error updating trip status:", err);
+		});
+}
+
+	function duringTripInterval() {
+    const currentHash = window.location.hash;
+
+		if (currentHash === "#/trip" && pages.get("trip")) {
+		if (!intervalId) {
+			intervalId = setInterval(duringTrip, 5000);
+			console.log("Started interval for #/trip");
+		}
+		} else {
+		if (intervalId) {
+			clearInterval(intervalId);
+			intervalId = null;
+			console.log("Stopped interval (not on #/trip)");
+		}
+		}
+  	}
+
 	search.addEventListener("search", requestSearch);
+	duringTripInterval();
 
 	togglePage("main");
-});
+	// Run when the hash changes
+  	window.addEventListener("hashchange", duringTripInterval);
+	});

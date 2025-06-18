@@ -15,7 +15,7 @@ class Point(models.Model):
     
 
 class Trip(models.Model):
-    booked = models.DateTimeField(null=False, blank=False)
+    booked = models.DateTimeField(null=True, blank=True)
     pickedUp = models.DateTimeField( null=True, blank=True)
     completed = models.DateTimeField( null=True, blank=True)
 
