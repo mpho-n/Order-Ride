@@ -81,10 +81,16 @@ def place(request, place_id):
     try:
         point = Point.objects.get(id=pointID)
 
-        rate = 5
+        rate = 4
 
-        latInit = float(request.GET.get("lat"))
-        longInit = float(request.GET.get("long"))
+        try:
+            latInit = float(request.GET.get("lat"))
+            longInit = float(request.GET.get("long"))
+        except (TypeError, ValueError):
+            return JsonResponse({"locationError": 1})
+
+        if (latInit==None or longInit==None):
+            return JsonResponse({"locationError":1})
 
         latFin = float(point.lat)
         longFin = float(point.long)
@@ -100,7 +106,8 @@ def place(request, place_id):
             "displacement":disp,
             "cost":cost,
             "lat":point.lat,
-            "long":point.long
+            "long":point.long,
+            "locationError":0,
 
         }
         return JsonResponse(data)

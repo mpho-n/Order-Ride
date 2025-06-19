@@ -25,7 +25,7 @@
     justify-content: center;
   }
 
-  /* Simple spinning circle */
+  /* Spinning circle */
   .spinner {
     border: 4px solid #f3f3f3;
     border-top: 4px solid #3498db;
@@ -103,12 +103,12 @@
 			</div>
 
 			<div id="description-container">
-				<p id="description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum consequat ultrices felis, in vestibulum dui rhoncus eu.</p>
+				<p id="description">Error</p>
 			</div>
 
 			<p class="heading">Location</p>
 			<div id="location-container">
-				<p id="location">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+				<p id="location">Error loading, try again</p>
 			</div>
 
 			<p class="heading">Time</p>
@@ -186,7 +186,7 @@
 
 
 <script>
-  // Wait for everything: HTML, CSS, images, JS files, etc.
+  // Wait for page to load
   window.addEventListener("load", function () {
     const loader = document.getElementById("loading-screen");
     if (loader) {

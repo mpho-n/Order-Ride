@@ -145,6 +145,11 @@ document.addEventListener("DOMContentLoaded", function () {
 		fetch(`/place/${placeID}/?lat=${latitude}&long=${longitude}`)
 		.then(res => res.json())
 		.then(data => {
+			if (data.locationError==1){
+				alert("Please switch on device location to proceed or try again");
+				togglePage("main");
+				return;
+			}
 			destination.name=data.name;
 			destLat=data.lat;
 			destLong=data.long;
