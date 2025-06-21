@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 
 class Point(models.Model):
     name = models.CharField(max_length=50)
+    nicknames = models.CharField(max_length=50, null=True, blank=True)
     lat = models.FloatField()
     long = models.FloatField()
     full = models.CharField(max_length=21,validators=[MinLengthValidator(19)])

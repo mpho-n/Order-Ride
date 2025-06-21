@@ -64,10 +64,11 @@ def main(request):
 
 def filterMain(request):
     if request.user.is_authenticated:
-        places = Point.objects.filter(name__icontains=request.GET.get("search"))
+        query = request.GET.get("search")
+        places = Point.objects.filter(Q(name__icontains=query) | Q(nicknames__icontains=query))
         return render(request, 'nav/index.html', {"places":places})
-    for place in places:
-        print(place.name)
+        #for place in places:
+            #print(place.name)
     else:
         return redirect('login')
 
