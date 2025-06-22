@@ -161,27 +161,73 @@ def confirm(request):
     data ={"success":True}
     return JsonResponse(data)   
 
-def estimateTime():
-    return 2
+def estimatedTime(lat,long,lat1,long1,tripID):
+    trip = Trip.objects.get(id=tripID)
+    displ=displacement([lat,long],[lat1,long1])
+    eta= math.ceil(displ*3.5)
+    trip.eta = eta
+    trip.save()
+    return eta
+
+def cancelTrip(request):
+    if request.user.is_authenticated:
+        if request.method == 'GET':          
+            trip = Trip.objects.get(id=request.GET.get("id"))
+            trip.canceled = True
+            trip.save
+
+def tripUpdate(request):
+    if request.user.is_authenticated:
+        if request.method == 'GET':          
+            trip = Trip.objects.get(id=request.GET.get("id"))
+            trip.pickedUp = datetime.now()
+
+            trip.save()
+
+            if trip.pickedUp==None:
+                latPoint=trip.pickUp.lat
+                longPoint=trip.pickUp.long
+            else:
+                latPoint=trip.dropOff.lat
+                longPoint=trip.dropOff.long
+
+            lat=float(request.GET.get("lat"))
+            long=float(request.GET.get("long"))
+            time = estimatedTime(latPoint,longPoint,lat,long,request.GET.get("id"))
+
+            if trip.done==True:
+                sts=0
+            elif trip.canceled==True:
+                sts=10
+            elif trip.driver is None: 
+                sts=1
+            else: sts=2
+    return JsonResponse({'status':sts})
 
 def tripStatus(request):
     if request.user.is_authenticated:
         if request.method == 'GET':          
             trip = Trip.objects.get(id=request.GET.get("id"))
             trip.pickedUp = datetime.now()
+
             trip.save()
             if trip.done:
                 sts=0
-            else: sts=1
+            elif trip.canceled:
+                sts=10
+            elif trip.driver is None: 
+                sts=1
+            else: sts=2
 
             if trip.driver is None:
-                drvr="Almost there"
+                drvr="Driver almost available"
                 drvrid=0
-                time = 5
+                time = 10#math.ceil(4*estimatedTime(trip.pickUp.lat, trip.pickUp.long, trip.dropOff.lat, trip.dropOff.long, request.GET.get("id")))
+                print(time)
             else:
-                drvr=trip.driver.first_name
+                drvr=trip.driver.username
                 drvrid=trip.driver.id
-                time = estimateTime()
+                time = trip.eta
             data ={
                 "name" : drvr,
                 "driverID" : drvrid,
@@ -196,6 +242,7 @@ def pickedUp(request):
             trip = Trip.objects.get(id=request.GET.get("id"))
             trip.pickedUp = datetime.now()
             trip.save()
+            tripUpdate(request)
             
     data ={"success":True}
     return JsonResponse(data)
@@ -208,9 +255,12 @@ def tripOver(request):
             trip.done = True
             trip.completed = datetime.now()
             trip.save()
+            tripUpdate(request)
+
     print('done')
     data ={"success":True}
     return JsonResponse(data)
+
 
 def getLat(ID):
     location = Point.objects.get(id=ID)

@@ -168,6 +168,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		return Math.sqrt(y*y+x*x)*100
 	}
 
+
 	function checkTrip() {
 		getLocation();
 		console.log("Interval is running on #trip page...");
@@ -175,10 +176,16 @@ document.addEventListener("DOMContentLoaded", function () {
 		if (pickup.fetched==true){
 			if (displacementD()<0.1){
 				//trip completed
-				fetch(`/completed/?id=${destination.tripId}`)
+				fetch(`/completed/?id=${destination.tripId}&lat=${latitude}&long=${longitude}`)
 				.then(res => res.json())
 				.then(data => {
-					
+					if (data.status==0 || data.status==10){
+						clearInterval(intervalId);
+						intervalId = null;
+						console.log("Stopped interval (not on #/trip)");
+						togglePage("orders");
+						return;
+					}
 				});
 				location.reload()
 				togglePage("orders");
@@ -186,19 +193,37 @@ document.addEventListener("DOMContentLoaded", function () {
 		} else 
 			if (displacementP()<0.1){
 				//person fetched
-				fetch(`/fetched/?id=${destination.tripId}`)
+				fetch(`/fetched/?id=${destination.tripId}&lat=${latitude}&long=${longitude}`)
 				.then(res => res.json())
 				.then(data => {
-					
+					if (data.status==0 || data.status==10){
+						clearInterval(intervalId);
+						intervalId = null;
+						console.log("Stopped interval (not on #/trip)");
+						togglePage("orders");
+						return;
+					}
 				});
 				pickup.fetched = true;
 				//togglePage("orders");
+		} else {
+			fetch(`/trip-update/?id=${destination.tripId}&lat=${latitude}&long=${longitude}`)
+				.then(res => res.json())
+				.then(data => {
+					if (data.status==0 || data.status==10){
+						clearInterval(intervalId);
+						intervalId = null;
+						console.log("Stopped interval (not on #/trip)");
+						togglePage("orders");
+						return;
+					}
+				});
 		}
 	}
 	
 	function checkOrders() {
 		getLocation();
-		console.log("Interval is running on #trip page...");
+		console.log("Interval is running on #order page...");
 		location.reload();
 	}
 	function manageTripInterval() {
@@ -236,3 +261,6 @@ document.addEventListener("DOMContentLoaded", function () {
   // Run when the hash changes
   window.addEventListener("hashchange", manageTripInterval);
 });
+
+
+

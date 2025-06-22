@@ -146,7 +146,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		.then(res => res.json())
 		.then(data => {
 			if (data.locationError==1){
-				alert("Please switch on device location to proceed or try again");
+				alert("Please switch on and allow device location to proceed or try again");
 				togglePage("main");
 				return;
 			}
@@ -302,7 +302,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			return res.json();
 		})
 		.then(data => {
-			if (data.status==0){
+			if (data.status==0 || data.status==10){
 				clearInterval(intervalId);
 				intervalId = null;
 				console.log("Stopped interval (not on #/trip)");
@@ -312,7 +312,14 @@ document.addEventListener("DOMContentLoaded", function () {
 			document.getElementById('driver-info-text').innerHTML = data.name;
 			document.getElementById('driver-profile').style.backgroundImage = `url('static/nav/images/e${data.driverID}.jpg')`;
 			document.getElementById('trip-eta-card').innerHTML = `${data.eta} minutes away`;
-			document.getElementById('eta-top').innerHTML = data.eta;
+			if (data.status==2){
+				document.getElementById('eta-top').innerHTML = data.eta;
+				document.getElementById('trip-eta').innerHTML = `Driver <span id="eta-top">${data.eta}</span> minutes away`
+			} else {
+				document.getElementById('eta-top').innerHTML = data.eta;
+				document.getElementById('trip-eta').innerHTML = `Driver <span id="eta-top">${data.eta}</span> minutes away`
+			}
+			
 		})
 		.catch(err => {
 			console.error("Error updating trip status:", err);
