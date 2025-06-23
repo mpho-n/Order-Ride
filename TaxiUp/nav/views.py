@@ -132,7 +132,7 @@ def driver(request):
 def book(request):
     if request.user.is_authenticated:
         if request.method == 'GET':
-            rate = 4
+            rate = 0.35
             Code = genCode()
             pickup = nearest([float(request.GET.get("lat")),float(request.GET.get("long"))])
             displ = displacement([float(request.GET.get("lat")),float(request.GET.get("long"))],[Point.objects.get(id=pickup).lat,Point.objects.get(id=pickup).long])

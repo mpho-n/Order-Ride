@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		id: 0,
 		code: "",
 		tripID:0,
+		pickup:"",
 	}
 	const driver = {
 		id: 0,
@@ -95,6 +96,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			case "main":
 				// Clear search bar
 				search.value = "";
+				document.getElementById('destination').innerHTML="";
 				console.log("here 1");
 				toggleButton("request");
 				console.log("here 1");
@@ -151,6 +153,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				return;
 			}
 			destination.name=data.name;
+			destination.pickup=data.pickup;
 			destLat=data.lat;
 			destLong=data.long;
 			currLat = latitude;
@@ -236,6 +239,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				togglePage("main");
 				destination.active = false; // Indicate trip inactive
 				destDisplay.value = "Select a destination";
+				document.getElementById('destination').innerHTML="";
 			})
 			
 		}
@@ -263,14 +267,15 @@ document.addEventListener("DOMContentLoaded", function () {
 			destination.displacement = data.displacement;
 			destination.cost = data.cost;
 			driver.id = data.driver;
-			destination.tripID = data.tripID
+			destination.tripID = data.tripID;
+			destination.pickup = data.pickup;
 
 			destination.value = destination.name;
 			destination.active = true; // Indicate trip active
 			
 			// Modify the destination output to user
 			destDisplay.value = destination.name;
-			document.getElementById('trip-destination').innerHTML = destination.dropoff;
+			document.getElementById('trip-destination').innerHTML = `${destination.pickup} --> ${destination.dropoff}`;
 			document.getElementById('trip-destination-pic').style.backgroundImage = `url('static/nav/images/${destination.id}.jpg')`;
 			document.getElementById('trip-heading').innerHTML = "Ride pending";
 			document.getElementById('fare').innerHTML = "Trip Fare: R"+String(destination.cost);
