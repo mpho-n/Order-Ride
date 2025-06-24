@@ -275,7 +275,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			
 			// Modify the destination output to user
 			destDisplay.value = destination.name;
-			document.getElementById('trip-destination').innerHTML = `${destination.pickup} --> ${destination.dropoff}`;
+			document.getElementById('trip-destination').innerHTML = `Travelling to: ${destination.dropoff}`;
 			document.getElementById('trip-destination-pic').style.backgroundImage = `url('static/nav/images/${destination.id}.jpg')`;
 			document.getElementById('trip-heading').innerHTML = "Ride pending";
 			document.getElementById('fare').innerHTML = "Trip Fare: R"+String(destination.cost);
@@ -286,6 +286,8 @@ document.addEventListener("DOMContentLoaded", function () {
 			//document.getElementById('driver-profile').style.backgroundImage = `url('static/nav/images/e${destination}.jpg')`;
 			document.getElementById('driver-info-text').innerHTML = "Loading Driver";
 			document.getElementById('trip-price').children[0].innerHTML = "R"+String(destination.cost);
+			document.getElementById("trip-pickup").innerHTML = `Pick Up: ${destination.pickup}`;
+
 			console.log(destination.code);
 			console.log(data.displacement);
 			togglePage("main");

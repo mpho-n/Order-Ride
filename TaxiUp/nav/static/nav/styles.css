@@ -429,27 +429,28 @@ main {
 
 #destination-container {
 	width: 100vw;
-	height: 25vh;
+	height: fit-content;
 
 	display: grid;
 	align-items: center;
 	justify-items: center;
 
-	margin-top: 5vh;
+	margin-top: 3vh;
 }
 
-#destination-container .place {
+#destination-container .place, #pickup-container .place {
 	border: none;
 	box-shadow: none;
 
 	opacity: 0.9;
 
 	margin: 0;
-	margin-top: 1.75vh;
-	margin-bottom: 2.25vh;
+	margin-top: 1vh;
+	margin-bottom: 2vh;
+
 }
 
-#destination-container p {
+#destination-container p, #pickup-container p {
 	color: rgb(0, 31, 84);
 	font-weight: 300;
 
@@ -571,5 +572,40 @@ main {
 	font-size: 20px;
 	text-align: center;
 
-	margin-top: 2vh;
+	margin-top: 0.5vh;
 }
+
+/* Pick Up Details */
+#pickup-container {
+	width: 100vw;
+	height: fit-content;
+
+	display: flex;
+	align-items: center;
+	flex-direction: row;
+
+	padding-left: 5vw;
+	padding-right: 3vw;
+	box-sizing: border-box;
+}
+
+#trip-pickup-pic {
+	width: 40vw;
+	height: 17vw; 
+}
+
+#pickup-text-container p {
+	margin-left: 5vw;
+}
+
+#trip-pickup {
+	font-size: 15px;
+}
+
+.tip {
+	font-size: 13px;
+	color: #8E8E8E !important;
+	font-style: italic;
+	font-weight: 300;
+}
+
