@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		id: 0,
 		code: "",
 		tripID:0,
+		pickup:"",
 	}
 	const driver = {
 		id: 0,
@@ -95,8 +96,10 @@ document.addEventListener("DOMContentLoaded", function () {
 			case "main":
 				// Clear search bar
 				search.value = "";
+				document.getElementById('destination').innerHTML="";
+				console.log("here 1");
 				toggleButton("request");
-
+				console.log("here 1");
 				// Reset url
 				window.history.pushState(null, '', "/");
 				window.location.hash = "";
@@ -144,7 +147,13 @@ document.addEventListener("DOMContentLoaded", function () {
 		fetch(`/place/${placeID}/?lat=${latitude}&long=${longitude}`)
 		.then(res => res.json())
 		.then(data => {
+			if (data.locationError==1){
+				alert("Please switch on and allow device location to proceed or try again");
+				togglePage("main");
+				return;
+			}
 			destination.name=data.name;
+			destination.pickup=data.pickup;
 			destLat=data.lat;
 			destLong=data.long;
 			currLat = latitude;
@@ -217,17 +226,23 @@ document.addEventListener("DOMContentLoaded", function () {
 	// Cancel trip button
 	buttons.get("trip").addEventListener("click", function () {
 		if (!confirm("About to quit trip to " + destination.name + "!")) {
-			fetch(`/cancel/?id=${trip}`)
+			console.log("cancelation aborted");
+			return;
+		} else {
+			console.log("canceling");
+			fetch(`/cancel/?id=${destination.tripID}`)
 			.then(res => res.json())
 			.then(data => {
-
+				clearInterval(intervalId);
+				intervalId = null;
+				destination.tripID = 0;
+				togglePage("main");
+				destination.active = false; // Indicate trip inactive
+				destDisplay.value = "Select a destination";
+				document.getElementById('destination').innerHTML="";
 			})
-			return;
+			
 		}
-
-		togglePage("main");
-		destination.active = false; // Indicate trip inactive
-		destDisplay.value = "Select a destination";
 	});
 
 	// Back button
@@ -252,14 +267,15 @@ document.addEventListener("DOMContentLoaded", function () {
 			destination.displacement = data.displacement;
 			destination.cost = data.cost;
 			driver.id = data.driver;
-			destination.tripID = data.tripID
+			destination.tripID = data.tripID;
+			destination.pickup = data.pickup;
 
 			destination.value = destination.name;
 			destination.active = true; // Indicate trip active
 			
 			// Modify the destination output to user
 			destDisplay.value = destination.name;
-			document.getElementById('trip-destination').innerHTML = destination.dropoff;
+			document.getElementById('trip-destination').innerHTML = `${destination.pickup} --> ${destination.dropoff}`;
 			document.getElementById('trip-destination-pic').style.backgroundImage = `url('static/nav/images/${destination.id}.jpg')`;
 			document.getElementById('trip-heading').innerHTML = "Ride pending";
 			document.getElementById('fare').innerHTML = "Trip Fare: R"+String(destination.cost);
@@ -279,20 +295,36 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 
 	function duringTrip() {
+	if (destination.status == 0){
+		clearInterval(intervalId);
+		intervalId = null;
+		console.log("Cleared interval");
+		return;
+	}
 	fetch(`/status/?id=${destination.tripID}`)
 		.then(res => {
 			if (!res.ok) throw new Error("Failed to fetch trip status");
 			return res.json();
 		})
 		.then(data => {
-			if (data.status==0){
+			if (data.status==0 || data.status==10){
+				clearInterval(intervalId);
+				intervalId = null;
+				console.log("Stopped interval (not on #/trip)");
 				togglePage("main");
 				return;
 			}
 			document.getElementById('driver-info-text').innerHTML = data.name;
 			document.getElementById('driver-profile').style.backgroundImage = `url('static/nav/images/e${data.driverID}.jpg')`;
 			document.getElementById('trip-eta-card').innerHTML = `${data.eta} minutes away`;
-			document.getElementById('eta-top').innerHTML = data.eta;
+			if (data.status==2){
+				document.getElementById('eta-top').innerHTML = data.eta;
+				document.getElementById('trip-eta').innerHTML = `Driver <span id="eta-top">${data.eta}</span> minutes away`
+			} else {
+				document.getElementById('eta-top').innerHTML = data.eta;
+				document.getElementById('trip-eta').innerHTML = `Driver <span id="eta-top">${data.eta}</span> minutes away`
+			}
+			
 		})
 		.catch(err => {
 			console.error("Error updating trip status:", err);
@@ -302,18 +334,24 @@ document.addEventListener("DOMContentLoaded", function () {
 	function duringTripInterval() {
     const currentHash = window.location.hash;
 
-		if (currentHash === "#/trip" && pages.get("trip")) {
-		if (!intervalId) {
-			intervalId = setInterval(duringTrip, 5000);
-			console.log("Started interval for #/trip");
-		}
-		} else {
+		// Clear previous interval before setting a new one
 		if (intervalId) {
 			clearInterval(intervalId);
 			intervalId = null;
-			console.log("Stopped interval (not on #/trip)");
+			console.log("Cleared previous interval");
 		}
-		}
+		if (currentHash === "#/trip" && pages.get("trip")) {
+			if (!intervalId) {
+				intervalId = setInterval(duringTrip, 5000);
+				console.log("Started interval for #/trip");
+			}
+		} else {
+			if (intervalId) {
+				clearInterval(intervalId);
+				intervalId = null;
+				console.log("Stopped interval (not on #/trip)");
+			}
+		} 
   	}
 
 	search.addEventListener("search", requestSearch);
