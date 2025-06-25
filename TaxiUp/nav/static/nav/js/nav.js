@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		cost: 0,
 		displacement: 0,
 		id: 0,
+		pickupID: 0,
 		code: "",
 		tripID:0,
 		pickup:"",
@@ -269,7 +270,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			driver.id = data.driver;
 			destination.tripID = data.tripID;
 			destination.pickup = data.pickup;
-
+			destination.pickupID = data.pickupID;
 			destination.value = destination.name;
 			destination.active = true; // Indicate trip active
 			
@@ -287,6 +288,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			document.getElementById('driver-info-text').innerHTML = "Loading Driver";
 			document.getElementById('trip-price').children[0].innerHTML = "R"+String(destination.cost);
 			document.getElementById("trip-pickup").innerHTML = `Pick Up: ${destination.pickup}`;
+			document.getElementById("trip-pickup-pic").style.backgroundImage = `url('static/nav/images/${destination.pickupID}.jpg')`;
 
 			console.log(destination.code);
 			console.log(data.displacement);

@@ -34,7 +34,7 @@ def genCode():
 def main(request):
     search = False
     if request.user.is_authenticated:
-        if request.user.is_staff:
+        if not request.user.is_staff:
             return driver(request)
         
         all = Point.objects.all()
@@ -117,7 +117,7 @@ def place(request, place_id):
 
 def driver(request):
     if request.user.is_authenticated:
-        if request.user.is_staff:
+        if not request.user.is_staff:
             return main(request)
     #now = datetime.now()
     #if request.method == 'GET':
@@ -140,6 +140,7 @@ def book(request):
             trip.save()
             data ={
                 "pickup": Point.objects.get(id=pickup).name,
+                "pickupID": pickup,
                 "dropoff": Point.objects.get(id=request.GET.get("dest")).name,
                 "code":Code,
                 "cost": math.ceil(rate*displ),
