@@ -29,8 +29,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	const buttons = new Map([
 		["trip", document.getElementById("cancel-trip")],
-		["complete", document.getElementById("complete-ride")],
-		["quit", document.getElementById("quit-ride")],
 	]);
 
 	let backButton = document.getElementById("driver-back-button");
@@ -113,33 +111,35 @@ document.addEventListener("DOMContentLoaded", function () {
 		togglePage("trip");
 	});
 	
-	buttons.get("complete").addEventListener("click", function () {
-		// Button to indicate trip completed
+	
+	function completeRide (id) {
 		if (!confirm("About to COMPLETE trip")) {
 			return;
 		}
 
-		/* TODO: Process the completed trip */
+		/*
 		fetch(`/completed/?id=${destination.tripId}`)
 				.then(res => res.json())
 				.then(data => {
 					
 				});
 		location.reload()
-		togglePage("orders");
-	});
+		*/
 
-	buttons.get("quit").addEventListener("click", function () {
-		// Button to indicate trip quitted
+		alert("Trip " + id + ", has been completed");
+
+		togglePage("orders");
+	}
+	
+	function cancelRide (id) {
 		if (!confirm("About to QUIT trip")) {
 			return;
 		}
 
-		/* TODO: Process the quitted trip */
+		alert("Trip " + id + ", has been cancelled");
 
 		togglePage("orders");
-	});
-
+	}
 
 	const orderTiles = document.querySelectorAll(".order");
 
