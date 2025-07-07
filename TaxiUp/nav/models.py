@@ -15,7 +15,25 @@ class Point(models.Model):
         return self.name
     
 
+class Vehicle(models.Model):
+    type = models.CharField(max_length=50)
+    plate = models.CharField(max_length=50)
+    seats = models.IntegerField()
+    driver = models.OneToOneField(User, on_delete=models.SET_NULL, related_name='vehivle_driver', null=True, blank=True)
+    mileage = models.FloatField(null=True, blank=True)
+
+    lat = models.FloatField()
+    long = models.FloatField()
+    disabled = models.BooleanField(default=False)
+    lastInspected = models.DateField(null=True, blank=True)
+
+    def __str__(self):
+        if self.plate!="":
+            return self.plate
+        return "Vehivle has no plate"
+    
 class Trip(models.Model):
+    rideID = models.CharField(max_length=12, default="250707-00000")
     booked = models.DateTimeField(null=True, blank=True)
     pickedUp = models.DateTimeField( null=True, blank=True)
     completed = models.DateTimeField( null=True, blank=True)
@@ -26,6 +44,7 @@ class Trip(models.Model):
 
     driver = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name='driven_rides' )
     passenger = models.ForeignKey(User, on_delete=models.CASCADE, related_name='passenger_rides')
+    vehicle = models.ForeignKey(Vehicle, null=True, blank=True, on_delete=models.SET_NULL, related_name='driver_vehicle')
     
     eta = models.IntegerField(null=True, blank=True)
     PickupSec = models.FloatField(null=True, blank=True)
@@ -34,8 +53,8 @@ class Trip(models.Model):
     done = models.BooleanField(default=False)
     canceled = models.BooleanField(default=False)
 
-
     def __str__(self):
         if self.booked:
             return self.booked.strftime("%Y-%m-%d %H:%M:%S")
         return "Unbooked Trip"
+
