@@ -13,5 +13,6 @@ urlpatterns = [
     path('cancel/', views.cancel, name='cancel'),
     path('confirm/', views.confirm, name='confirmTrip'),
     path('status/', views.tripStatus, name='tripStatus'),
+    path('vehicle/<int:vehicleID>/', views.vehicleLog, name='logVehicle'),
     #path('s/', views.filterMain, name='home'),
 ]

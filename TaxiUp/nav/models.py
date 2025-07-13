@@ -19,11 +19,11 @@ class Vehicle(models.Model):
     type = models.CharField(max_length=50)
     plate = models.CharField(max_length=50)
     seats = models.IntegerField()
-    driver = models.OneToOneField(User, on_delete=models.SET_NULL, related_name='vehivle_driver', null=True, blank=True)
+    driver = models.OneToOneField(User, on_delete=models.SET_NULL, related_name='vehicle_driver', null=True, blank=True)
     mileage = models.FloatField(null=True, blank=True)
 
-    lat = models.FloatField()
-    long = models.FloatField()
+    lat = models.FloatField(null=True, blank=True)
+    long = models.FloatField(null=True, blank=True)
     disabled = models.BooleanField(default=False)
     lastInspected = models.DateField(null=True, blank=True)
 

@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Order Ride Interface</title>
+	<link rel="stylesheet" href="{% static 'nav/styles.css' %}"/>
+	<link rel="stylesheet" href="{% static 'nav/driver.css' %}"/>
+
+	<!--Get Screen Dimensions-->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+	<style>
+	</style>
+</head>
+<body>
+	<div id="orders-pae">
+		<div class="heading" id="accept-order-heading">Accept Orders:</div>
+		<div id="orders-container">
+
+		<div id="9999" class="order" style="background-color: lightcyan;" >
+				<p style="color:darkslategray; text-shadow: whitesmoke;">Trafic heavy around </p>
+		</div>
+        <p>How sway</p>
+			{% for vehicle in vehicles %}
+            <a href="/vehicle/{{vehicle.id}}">
+			<div id="{{vehicle.id}}" class="order">
+				<p>{{vehicle.plate}}  {{vehicle.seats}}</p>
+                <p>{{vehicle.type}}   </p>
+                {% if vehicle.disabled %}
+                    <p>dissabled</p>
+                {% endif %}
+			</div>
+            </a>
+			{% endfor %}
+		</div>
+	</div>
+		
+	
+	</div>
+
+    <script src="{% static 'nav/js/location.js' %}"></script>
+	<script src="{% static 'nav/js/nav.js' %}"></script>
+	<script>
+		getLocation();
+	</script>
+
+</body>
+</html>

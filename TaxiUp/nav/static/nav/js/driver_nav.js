@@ -1,25 +1,33 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+
+	const createDestination = () => ({
+		active: false,
+		name: "",
+		latitude: 0,
+		longitude: 0,
+		tripId: 0,
+		code: ""
+	});
+
 	const destination = {
 		active: false,
 		name: "",
 		latitude: 0,
 		longitude: 0,
-		//cost: 0,
-		//displacement: 0,
 		tripId: 0,
-		//code: "",
 	}
 	const pickup = {
 		fetched: false,
 		name: "",
 		latitude: 0,
 		longitude: 0,
-		//cost: 0,
-		//displacement: 0,
 		tripId: 0,
-		//code: "",
 	}
+
+	let tripCount = 0;
+	let trips = [];
+	let RideID = "";
 
 	const pages = new Map([
 		["orders", document.getElementById("orders-page")],
@@ -86,18 +94,65 @@ document.addEventListener("DOMContentLoaded", function () {
 		fetch(`/trip/?lat=${latitude}&long=${longitude}&id=${orderID}`)
 		.then(res => res.json())
 		.then(data => {
-			document.getElementById('passenger').innerHTML = data.passenger;
 			document.getElementById('date').innerHTML = 'Date: '+data.date;
 			document.getElementById('time').innerHTML = 'Requested: '+data.time;
 			document.getElementById('pick-up').innerHTML = 'Pick Up: '+data.pickup;
 			document.getElementById('drop-off').innerHTML = 'Drop Off: '+data.dropoff;
-			document.getElementById('ride-code').innerHTML = data.code;
-			destination.latitude = data.destLat;
+			passengers = data.passengers;
+
+
+			tripCount = data.passengers || 1;
+			RideID = data.rideID || "";
+			for (let i = 0; i < tripCount; i++) {
+				const suffix = i === 0 ? '' : i.toString(); // "" for first, "1", "2" after
+
+				const trip = {
+					pickup: data[`pickup${suffix}`],
+					dropoff: data[`dropoff${suffix}`],
+					code: data[`code${suffix}`],
+					passenger: data[`passenger${suffix}`],
+					date: data[`date${suffix}`],
+					time: data[`time${suffix}`],
+					destLat: data[`destLat${suffix}`],
+					destLong: data[`destLong${suffix}`],
+					pickLat: data[`pickLat${suffix}`],
+					pickLong: data[`pickLong${suffix}`],
+					ID: data[`ID${suffix}`]
+				};
+
+				trips.push(trip);
+			}
+			console.log(trips);
+			const allPassengers = trips.map(trip => trip.passenger).join(", ");
+			const allCodes = trips.map(trip => trip.code).join(", ");
+
+			document.getElementById('passenger').innerHTML = allPassengers;
+			document.getElementById('ride-code').innerHTML = allCodes;
+
+
+			const container = document.querySelector(".cancel-containers");
+
+			// Build the combined HTML string from the trips array
+			let html = "";
+
+			trips.forEach(trip => {
+				html += `
+					<div class="button-container"><div class="passenger-details-container"><div class="passenger-details-name">${trip.passenger}</div>
+					<div class="passenger-details-code">${trip.code}</div></div>
+					<button class="ride-complete-button" onclick="completeRide(${trip.ID},${RideID})">Complete Ride</button>
+					<button class="ride-cancel-button" onclick="cancelRide(${trip.ID},${RideID})">Cancel Ride</button></div>
+				`
+			});
+			container.innerHTML = html;
+
+
+			/*destination.latitude = data.destLat;
 			destination.longitude = data.destLong;
 			pickup.latitude = data.pickLat;
 			pickup.longitude = data.pickLong;
+
 			destination.tripId = data.ID;
-			pickup.fetched = false;
+			pickup.fetched = false;*/
 		});
 
 		togglePage("trip");
@@ -112,33 +167,45 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 	
 	
-	function completeRide (id) {
+	window.completeRide = function(id, tripID) {
 		if (!confirm("About to COMPLETE trip")) {
 			return;
 		}
-
-		/*
-		fetch(`/completed/?id=${destination.tripId}`)
-				.then(res => res.json())
-				.then(data => {
-					
-				});
+		console.log(id);
+		
+		fetch(`/completed/?id=${id}&tripID=${tripID}`)
+			.then(res => res.json())
+			.then(data => {
+				if (data.finished){
+					alert("Trip " + id + ", has been completed");
+					togglePage("orders");
+				} else{
+					return;
+				}
+			});
 		location.reload()
-		*/
 
-		alert("Trip " + id + ", has been completed");
-
-		togglePage("orders");
+		//alert("Trip " + id + ", has been completed");
+		//togglePage("orders");
 	}
 	
-	function cancelRide (id) {
+	window.cancelRide = function(id, tripID){
 		if (!confirm("About to QUIT trip")) {
 			return;
 		}
+		fetch(`/cancel/?id=${id}&tripID=${tripID}`)
+			.then(res => res.json())
+			.then(data => {
+				if (data.finished){
+					alert("Trip " + id + ", has been cancelled");
+					togglePage("orders");
+				} else{
+					return;
+				}
+		});
 
-		alert("Trip " + id + ", has been cancelled");
-
-		togglePage("orders");
+		//alert("Trip " + id + ", has been cancelled");
+		//togglePage("orders");
 	}
 
 	const orderTiles = document.querySelectorAll(".order");
@@ -176,38 +243,40 @@ document.addEventListener("DOMContentLoaded", function () {
 		if (pickup.fetched==true){
 			if (displacementD()<0.1){
 				//trip completed
-				fetch(`/completed/?id=${destination.tripId}&lat=${latitude}&long=${longitude}`)
-				.then(res => res.json())
-				.then(data => {
-					if (data.status==0 || data.status==10){
-						clearInterval(intervalId);
-						intervalId = null;
-						console.log("Stopped interval (not on #/trip)");
-						togglePage("orders");
-						return;
-					}
-				});
+				trips.forEach(trip => {
+					fetch(`/completed/?id=${trip.ID}&lat=${latitude}&long=${longitude}`)
+					.then(res => res.json())
+					.then(data => {
+						if (data.status==0 || data.status==10){
+							clearInterval(intervalId);
+							intervalId = null;
+							console.log("Stopped interval (not on #/trip)");
+							togglePage("orders");
+							return;
+						}
+					});
+				})
 				location.reload()
 				togglePage("orders");
 			}
 		} else 
 			if (displacementP()<0.1){
 				//person fetched
-				fetch(`/fetched/?id=${destination.tripId}&lat=${latitude}&long=${longitude}`)
-				.then(res => res.json())
-				.then(data => {
-					if (data.status==0 || data.status==10){
-						clearInterval(intervalId);
-						intervalId = null;
-						console.log("Stopped interval (not on #/trip)");
-						togglePage("orders");
-						return;
-					}
+				fetch(`/fetched/?id=${RideID}&lat=${latitude}&long=${longitude}`)
+					.then(res => res.json())
+					.then(data => {
+						if (data.status==0 || data.status==10){
+							clearInterval(intervalId);
+							intervalId = null;
+							console.log("Stopped interval (not on #/trip)");
+							togglePage("orders");
+							return;
+						}
 				});
 				pickup.fetched = true;
 				//togglePage("orders");
 		} else {
-			fetch(`/trip-update/?id=${destination.tripId}&lat=${latitude}&long=${longitude}`)
+			fetch(`/trip-update/?id=${RideID}&lat=${latitude}&long=${longitude}`)
 				.then(res => res.json())
 				.then(data => {
 					if (data.status==0 || data.status==10){
@@ -216,6 +285,9 @@ document.addEventListener("DOMContentLoaded", function () {
 						console.log("Stopped interval (not on #/trip)");
 						togglePage("orders");
 						return;
+					} else {
+						document.getElementById('passenger').innerHTML = data.names;
+						document.getElementById('ride-code').innerHTML = data.codes;
 					}
 				});
 		}

@@ -1,11 +1,14 @@
 from django.shortcuts import render, redirect
 import math
-from .models import Point, Trip
+from .models import Point, Trip, Vehicle
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse, HttpResponse
 from datetime import datetime
 from django.templatetags.static import static
 import random, string
+from django.utils import timezone
+from collections import defaultdict
+
 
 # Create your views here.
 
@@ -31,10 +34,18 @@ def genCode():
     code = ''.join(random.choice(pool) for _ in range(6))
     return code
 
+def genUniqueCode():
+    today = timezone.now().date()
+    count = Trip.objects.filter(created_at__date=today).count() +1
+    dateStr = timezone.now().date().strftime('%y%m%d')
+    index_str = str(count).zfill(5)
+    return f"{dateStr}-{index_str}"
+
+
 def main(request):
     search = False
     if request.user.is_authenticated:
-        if request.user.is_staff:
+        if not request.user.is_staff:
             return driver(request)
         
         all = Point.objects.all()
@@ -72,6 +83,10 @@ def filterMain(request):
     else:
         return redirect('login')
 
+
+def tripsOfCode(rideID):
+    trips = Trip.objects.filter(rideID=rideID, done=False)
+    return list(trips)
 
 
 def page(request):
@@ -117,17 +132,52 @@ def place(request, place_id):
 
 def driver(request):
     if request.user.is_authenticated:
-        if request.user.is_staff:
+        if not request.user.is_staff:
             return main(request)
     #now = datetime.now()
     #if request.method == 'GET':
     #    tripNo = int(request.GET.get("trip"))
     #    trip = Trip.objects.get(id=tripNo)
+        vehicle = getattr(request.user, 'vehicle_driver', None)
 
-        dueTrips = Trip.objects.filter(done=False).exclude(booked__isnull=True)
+        if vehicle == None:
+            vehicles = Vehicle.objects.all()
+            return render(request, 'nav/vehicle.html',{'vehicles':vehicles})
+
+        dueTrips = Trip.objects.filter(done=False).exclude(booked__isnull=True).order_by('-booked')
+        #bellow was an attempt to order trips 
+        '''
+        grouped = defaultdict(list)
+        for trip in dueTrips:
+            key = (trip.pickUp_id, trip.dropOff_id)
+            grouped[key].append(trip)
+
+        grouped_trips = list(grouped.values())
+        flat_trips = []
+        for group in grouped.values():
+            flat_trips.extend(group)'''
+
         return render(request, 'nav/driver.html',{'trips':dueTrips})
     else:
         return redirect('login')
+    
+
+def vehicleLog(request, vehicleID):
+    vehicle = Vehicle.objects.get(id=vehicleID)
+    vehicle.driver = request.user
+    vehicle.save()
+    return driver(request)
+
+def checkCurr(pickup, dropoff):
+    result = -1
+    todayTrips = Trip.objects.filter(booked=timezone.now().date())
+    for trip in todayTrips:
+        if ((trip.booked != None)and(trip.pickUp.id == pickup)and(trip.dropOff.id==dropoff)and(trip.pickedUp==False)and(trip.done==False)and(trip.canceled==False)and(trip.driver==None)):
+            result = trip.rideID
+            return result
+            break
+    return result
+
 
 def book(request):
     if request.user.is_authenticated:
@@ -135,8 +185,15 @@ def book(request):
             rate = 0.35
             Code = genCode()
             pickup = nearest([float(request.GET.get("lat")),float(request.GET.get("long"))])
+            dropoff = request.GET.get("dest")
             displ = displacement([float(request.GET.get("lat")),float(request.GET.get("long"))],[Point.objects.get(id=pickup).lat,Point.objects.get(id=pickup).long])
-            trip = Trip(pickUp=Point.objects.get(id=pickup), dropOff= Point.objects.get(id=request.GET.get("dest")),code=Code, passenger=request.user)
+            current = checkCurr(pickup,dropoff)
+
+            if current=="none":
+                idCode = genUniqueCode()
+            else: idCode=current
+
+            trip = Trip(pickUp=Point.objects.get(id=pickup), dropOff= Point.objects.get(id=dropoff),code=Code, passenger=request.user, rideID=idCode)
             trip.save()
             data ={
                 "pickup": Point.objects.get(id=pickup).name,
@@ -180,30 +237,51 @@ def cancelTrip(request):
 def tripUpdate(request):
     if request.user.is_authenticated:
         if request.method == 'GET':          
-            trip = Trip.objects.get(id=request.GET.get("id"))
-            trip.pickedUp = datetime.now()
-
-            trip.save()
-
-            if trip.pickedUp==None:
-                latPoint=trip.pickUp.lat
-                longPoint=trip.pickUp.long
+            #trips = Trip.objects.filter(rideID=request.GET.get("id"))
+            trips = tripsOfCode(request.GET.get("id"))
+            data ={"success":True,
+                    "finished":False}
+            allTrips = tripsOfCode(request.GET.get("id"))
+            if len(allTrips)==0:
+                data.update({"finished":True})
             else:
-                latPoint=trip.dropOff.lat
-                longPoint=trip.dropOff.long
+                names_string = ", ".join(trip.passenger.username for trip in allTrips)
+                codes_string = ", ".join(trip.code for trip in allTrips)
+                data.update({"names":names_string,
+                              "codes":codes_string})
 
-            lat=float(request.GET.get("lat"))
-            long=float(request.GET.get("long"))
-            time = estimatedTime(latPoint,longPoint,lat,long,request.GET.get("id"))
+            for trip in trips:
+                trip.pickedUp = datetime.now()
 
-            if trip.done==True:
+                trip.save()
+
+                if trip.pickedUp==None:
+                    latPoint=trip.pickUp.lat
+                    longPoint=trip.pickUp.long
+                else:
+                    latPoint=trip.dropOff.lat
+                    longPoint=trip.dropOff.long
+
+                lat=float(request.GET.get("lat"))
+                long=float(request.GET.get("long"))
+                time = estimatedTime(latPoint,longPoint,lat,long,trip.id)
+
+                if trip.done==True:
+                    sts=0
+                elif trip.canceled==True:
+                    sts=10
+                elif trip.driver is None: 
+                    sts=1
+                else: sts=2
+
+            if len(allTrips)==0:
                 sts=0
-            elif trip.canceled==True:
-                sts=10
-            elif trip.driver is None: 
+            elif allTrips[0].driver is None: 
                 sts=1
             else: sts=2
-    return JsonResponse({'status':sts})
+
+            data.update({"status":sts})
+    return JsonResponse(data)
 
 def tripStatus(request):
     if request.user.is_authenticated:
@@ -240,9 +318,11 @@ def tripStatus(request):
 def pickedUp(request):
     if request.user.is_authenticated:
         if request.method == 'GET':          
-            trip = Trip.objects.get(id=request.GET.get("id"))
-            trip.pickedUp = datetime.now()
-            trip.save()
+            #trip = Trip.objects.get(id=request.GET.get("id"))
+            trips = tripsOfCode(request.GET.get("id"))
+            for trip in trips:
+                trip.pickedUp = datetime.now()
+                trip.save()
             tripUpdate(request)
             
     data ={"success":True}
@@ -253,13 +333,19 @@ def tripOver(request):
     if request.user.is_authenticated:
         if request.method == 'GET':          
             trip = Trip.objects.get(id=request.GET.get("id"))
+            #trips = tripsOfCode(request.GET.get("tripID"))
+            #for trip in trips:
             trip.done = True
             trip.completed = datetime.now()
             trip.save()
             tripUpdate(request)
 
     print('done')
-    data ={"success":True}
+    data ={"success":True,
+           "finished":False}
+    allTrips = tripsOfCode(request.GET.get("tripID"))
+    if len(allTrips)==0:
+        data.update({"finished":True})
     return JsonResponse(data)
 
 
@@ -273,24 +359,100 @@ def getLong(ID):
 
 def tripInfo(request):
     if request.user.is_authenticated:
-        if request.method == 'GET':          
-            trip = Trip.objects.get(id=request.GET.get("id"))
-            dropoff = trip.dropOff
-            data ={
-                "pickup": str(trip.pickUp),
-                "dropoff": str(trip.dropOff),
-                "code":trip.code,
-                "passenger": str(trip.passenger),
-                "date": trip.booked.date(),
-                "time":trip.booked.time(),
-                "destLat": getLat(trip.dropOff.id),
-                "destLong": getLong(trip.dropOff.id),
-                "pickLat":getLat(trip.pickUp.id),
-                "pickLong":getLong(trip.pickUp.id),
-                "ID":trip.id,
-            }
-            trip.driver = request.user
-            trip.save()
+        if request.method == 'GET':        
+            passengers = 1
+            vehicle = Vehicle.objects.filter(driver=request.user).first()
+            if not vehicle:
+                pass
+            else:
+                if vehicle.seats >= 1:
+                    trip = Trip.objects.get(id=request.GET.get("id")) #make it trips
+                    dropoff = trip.dropOff
+                    data ={
+                        "pickup": str(trip.pickUp),
+                        "dropoff": str(trip.dropOff),
+                        "code":trip.code,
+                        "passenger": str(trip.passenger),
+                        "date": trip.booked.date(),
+                        "time":trip.booked.time(),
+                        "destLat": getLat(trip.dropOff.id),
+                        "destLong": getLong(trip.dropOff.id),
+                        "pickLat":getLat(trip.pickUp.id),
+                        "pickLong":getLong(trip.pickUp.id),
+                        "ID":trip.id,
+                        "passengers":1,
+                        "rideID":trip.rideID,
+                    }
+                    trip.driver = request.user
+                    trip.save()
+                if vehicle.seats>= 2:
+                    if checkCurr(trip.pickUp,trip.dropOff)!=-1:
+                        trip = Trip.objects.get(id=checkCurr(trip.pickUp,trip.dropOff)) #make it trips
+                        dropoff = trip.dropOff
+                        data.update({
+                            "pickup1": str(trip.pickUp),
+                            "dropoff1": str(trip.dropOff),
+                            "code1":trip.code,
+                            "passenger1": str(trip.passenger),
+                            "date1": trip.booked.date(),
+                            "time1":trip.booked.time(),
+                            "destLat1": getLat(trip.dropOff.id),
+                            "destLong1": getLong(trip.dropOff.id),
+                            "pickLat1":getLat(trip.pickUp.id),
+                            "pickLong1":getLong(trip.pickUp.id),
+                            "ID1":trip.id,
+                            "passengers":2,
+                        })
+                        trip.driver = request.user
+                        trip.save()
+                    else: 
+                        return JsonResponse(data)
+                if vehicle.seats>= 3:
+                    if checkCurr(trip.pickUp,trip.dropOff)!=-1:
+                        trip = Trip.objects.get(id=checkCurr(trip.pickUp,trip.dropOff)) #make it trips
+                        dropoff = trip.dropOff
+                        data.update({
+                            "pickup2": str(trip.pickUp),
+                            "dropoff2": str(trip.dropOff),
+                            "code2":trip.code,
+                            "passenger2": str(trip.passenger),
+                            "date2": trip.booked.date(),
+                            "time2":trip.booked.time(),
+                            "destLat2": getLat(trip.dropOff.id),
+                            "destLong2": getLong(trip.dropOff.id),
+                            "pickLat2":getLat(trip.pickUp.id),
+                            "pickLong2":getLong(trip.pickUp.id),
+                            "ID2":trip.id,
+                            "passengers":3,
+                        })
+                        trip.driver = request.user
+                        trip.save()
+                    else: 
+                        return JsonResponse(data)
+                if vehicle.seats>= 4:
+                    if checkCurr(trip.pickUp,trip.dropOff)!=-1:
+                        trip = Trip.objects.get(id=checkCurr(trip.pickUp,trip.dropOff)) #make it trips
+                        dropoff = trip.dropOff
+                        data.update({
+                            "pickup3": str(trip.pickUp),
+                            "dropoff3": str(trip.dropOff),
+                            "code3":trip.code,
+                            "passenger3": str(trip.passenger),
+                            "date3": trip.booked.date(),
+                            "time3":trip.booked.time(),
+                            "destLat3": getLat(trip.dropOff.id),
+                            "destLong3": getLong(trip.dropOff.id),
+                            "pickLat3":getLat(trip.pickUp.id),
+                            "pickLong3":getLong(trip.pickUp.id),
+                            "ID3":trip.id,
+                            "passengers":4,
+                        })
+                        trip.driver = request.user
+                        trip.save()
+                    else: 
+                        return JsonResponse(data)
+
+                    
         return JsonResponse(data)
     else:
         return redirect('login')
@@ -300,9 +462,13 @@ def cancel(request):
         if request.method == 'GET':          
             trip = Trip.objects.get(id=request.GET.get("id"))
             #trip.delete()
-            trip.done = True
+            trip.canceled = True
             trip.save()
     print('canceled')
-    data ={"success":True}
+    data ={"success":True,
+           "finished":False}
+    allTrips = tripsOfCode(request.GET.get("tripID"))
+    if len(allTrips)==0:
+        data.update({"finished":True})
     return JsonResponse(data)
 
