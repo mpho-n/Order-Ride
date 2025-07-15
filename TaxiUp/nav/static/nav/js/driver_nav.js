@@ -102,7 +102,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 			tripCount = data.passengers || 1;
+			console.log(tripCount);
 			RideID = data.rideID || "";
+			trips = [];
+			trips.length = 0;
 			for (let i = 0; i < tripCount; i++) {
 				const suffix = i === 0 ? '' : i.toString(); // "" for first, "1", "2" after
 
@@ -139,8 +142,8 @@ document.addEventListener("DOMContentLoaded", function () {
 				html += `
 					<div class="button-container"><div class="passenger-details-container"><div class="passenger-details-name">${trip.passenger}</div>
 					<div class="passenger-details-code">${trip.code}</div></div>
-					<button class="ride-complete-button" onclick="completeRide(${trip.ID},${RideID})">Complete Ride</button>
-					<button class="ride-cancel-button" onclick="cancelRide(${trip.ID},${RideID})">Cancel Ride</button></div>
+					<button class="ride-complete-button" onclick="completeRide(${trip.ID},'${RideID}')">Complete Ride</button>
+					<button class="ride-cancel-button" onclick="cancelRide(${trip.ID},'${RideID}')">Cancel Ride</button></div>
 				`
 			});
 			container.innerHTML = html;
@@ -200,6 +203,7 @@ document.addEventListener("DOMContentLoaded", function () {
 					alert("Trip " + id + ", has been cancelled");
 					togglePage("orders");
 				} else{
+					console.log("didnt shift pages")
 					return;
 				}
 		});
@@ -289,6 +293,60 @@ document.addEventListener("DOMContentLoaded", function () {
 						document.getElementById('passenger').innerHTML = data.names;
 						document.getElementById('ride-code').innerHTML = data.codes;
 					}
+				
+
+					document.getElementById('date').innerHTML = 'Date: '+data.date;
+					document.getElementById('time').innerHTML = 'Requested: '+data.time;
+					document.getElementById('pick-up').innerHTML = 'Pick Up: '+data.pickup;
+					document.getElementById('drop-off').innerHTML = 'Drop Off: '+data.dropoff;
+					passengers = data.passengers;
+
+
+					tripCount = data.passengers || 1;
+					RideID = data.rideID || "";
+					trips = [];
+					trips.length = 0;
+					for (let i = 0; i < tripCount; i++) {
+						const suffix = i === 0 ? '' : i.toString(); // "" for first, "1", "2" after
+
+						const trip = {
+							pickup: data[`pickup${suffix}`],
+							dropoff: data[`dropoff${suffix}`],
+							code: data[`code${suffix}`],
+							passenger: data[`passenger${suffix}`],
+							date: data[`date${suffix}`],
+							time: data[`time${suffix}`],
+							destLat: data[`destLat${suffix}`],
+							destLong: data[`destLong${suffix}`],
+							pickLat: data[`pickLat${suffix}`],
+							pickLong: data[`pickLong${suffix}`],
+							ID: data[`ID${suffix}`]
+						};
+
+						trips.push(trip);
+					}
+					console.log(trips);
+					const allPassengers = trips.map(trip => trip.passenger).join(", ");
+					const allCodes = trips.map(trip => trip.code).join(", ");
+
+					document.getElementById('passenger').innerHTML = allPassengers;
+					document.getElementById('ride-code').innerHTML = allCodes;
+
+
+					const container = document.querySelector(".cancel-containers");
+
+					// Build the combined HTML string from the trips array
+					let html = "";
+
+					trips.forEach(trip => {
+						html += `
+							<div class="button-container"><div class="passenger-details-container"><div class="passenger-details-name">${trip.passenger}</div>
+							<div class="passenger-details-code">${trip.code}</div></div>
+							<button class="ride-complete-button" onclick="completeRide(${trip.ID},'${RideID}')">Complete Ride</button>
+							<button class="ride-cancel-button" onclick="cancelRide(${trip.ID},'${RideID}')">Cancel Ride</button></div>
+						`
+					});
+					container.innerHTML = html;
 				});
 		}
 	}
