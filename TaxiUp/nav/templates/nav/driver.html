@@ -17,10 +17,6 @@
 		<div class="heading" id="accept-order-heading">Accept Orders:</div>
 		<div id="orders-container">
 
-		<div id="9999" class="order" style="background-color: lightcyan;" >
-				<p style="color:darkslategray; text-shadow: whitesmoke;">Trafic heavy around </p>
-		</div>
-
 			{% for trip in trips %}
 			<div id="{{trip.id}}" class="order">
 				<p>{{trip.pickUp}} to {{trip.dropOff}}</p>
