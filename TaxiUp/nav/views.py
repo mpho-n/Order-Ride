@@ -170,12 +170,16 @@ def vehicleLog(request, vehicleID):
 
 def checkCurr(pickup, dropoff):#for booking purposes, checking if a code of sorts exists
     result = -1
-    todayTrips = Trip.objects.filter(booked=timezone.now().date())
+    todayTrips = Trip.objects.filter(booked__date=timezone.now().date())
+    print(pickup)
+    print(dropoff)
     for trip in todayTrips:
-        if ((trip.booked != None)and(trip.pickUp.id == pickup)and(trip.dropOff.id==dropoff)and(trip.pickedUp==False)and(trip.done==False)and(trip.canceled==False)):
+        if((trip.pickedUp == None)and(trip.booked != None)and(trip.pickUp.id == pickup)and(trip.dropOff.id==dropoff)and(trip.done!=True)and(trip.canceled!=True)):
             result = trip.rideID
+            print('finaly')
+            print(result)
             return result
-
+# 
     return result
 
 
@@ -185,13 +189,15 @@ def book(request):
             rate = 0.35
             Code = genCode()
             pickup = nearest([float(request.GET.get("lat")),float(request.GET.get("long"))])
-            dropoff = request.GET.get("dest")
+            dropoff = int(request.GET.get("dest"))
             displ = displacement([float(request.GET.get("lat")),float(request.GET.get("long"))],[Point.objects.get(id=pickup).lat,Point.objects.get(id=pickup).long])
             current = checkCurr(pickup,dropoff)
+            print(current)
 
             if current==-1:
                 idCode = genUniqueCode()
-            else: idCode=current
+            else: 
+                idCode=current
 
             trip = Trip(pickUp=Point.objects.get(id=pickup), dropOff= Point.objects.get(id=dropoff),code=Code, passenger=request.user, rideID=idCode)
             trip.save()
@@ -266,6 +272,7 @@ def tripUpdate(request):
                 lat=float(request.GET.get("lat"))
                 long=float(request.GET.get("long"))
                 time = estimatedTime(latPoint,longPoint,lat,long,tripp.id)
+                tripp.eta = time
 
                 if tripp.done==True:
                     sts=0
@@ -413,6 +420,7 @@ def tripStatus(request):
                 "eta": time,
                 "status": sts,
             }
+            print("time: "+str(time))
             return JsonResponse(data)
 
 def pickedUp(request):
