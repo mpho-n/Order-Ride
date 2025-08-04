@@ -45,7 +45,7 @@ def genUniqueCode():
 def main(request):
     search = False
     if request.user.is_authenticated:
-        if not request.user.is_staff:
+        if request.user.is_staff:
             return driver(request)
         
         all = Point.objects.all()
@@ -132,7 +132,7 @@ def place(request, place_id):
 
 def driver(request):
     if request.user.is_authenticated:
-        if not request.user.is_staff:
+        if request.user.is_staff:
             return main(request)
     #now = datetime.now()
     #if request.method == 'GET':

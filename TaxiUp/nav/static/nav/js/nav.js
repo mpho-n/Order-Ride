@@ -174,6 +174,18 @@ document.addEventListener("DOMContentLoaded", function () {
 		togglePage("place"); 
 	}
 
+	function attatchPlaceClickListens() {
+		// Loads placeClicked to all place tiles
+		// Skip the place tile in the place page
+		const placeTiles = document.querySelectorAll(".place:not(.noninteractive)");
+
+		for (const element of placeTiles) {
+			element.addEventListener("click", function () {
+				placeClicked(this)
+			});
+		}
+	}
+
 	function requestSearch() {
 		// Check if valid search and send to search request to server
 		let input = search.value.trim();		
@@ -182,31 +194,22 @@ document.addEventListener("DOMContentLoaded", function () {
 			return;
 		}
 		
-		/* TODO: Send request to server for places */
-		
-		//let arg = "/?search=" + encodeURIComponent(input);
-		//window.history.pushState(null, '', arg);
+		/* Send request to server for places */
+		let container = document.getElementById('results-container');
 		fetch(`/?search=${input}`)
 		.then(res => res.text())
 		.then(data => {
-			let result = data;
 			//prepare the page
-			let container = document.getElementById('results-container');
 			container.innerHTML = data;
+
+			attatchPlaceClickListens();
 		});
+
 
 		togglePage("search");
 	}
 
-	// Loads placeClicked to all place tiles
-	// Skip the place tile in the place page
-	const placeTiles = document.querySelectorAll(".place:not(.noninteractive)");
-
-	for (const element of placeTiles) {
-		element.addEventListener("click", function () {
-			placeClicked(this)
-		});
-	}
+	attatchPlaceClickListens();
 
 	// Request ride button 
 	buttons.get("request").addEventListener("click", function (){
