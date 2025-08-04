@@ -124,11 +124,8 @@
 		<div id="results-container">
 			{% if search %}
 			{% for place in places %}
-			<!--<a id="{{place.name}}" href="http://localhost:8000/place?place={{place.id}}">-->
-
 			<div id="{{place.id}}" class="place" style="background-image: url('{% static 'nav/images/' %}{{ place.id }}.jpg')">					
 				<p id="{{place.name}}" > {{place.name}} </p> </div>
-			<!--</a>-->
 			{% endfor %}
 			{% endif %}
 		</div>
